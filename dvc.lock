@@ -58,3 +58,46 @@ stages:
       hash: md5
       md5: e59b71433cc0d628482b66501f54476c
       size: 49045
+  clean_with_pyspark:
+    cmd: python -m src.data.clean_with_spark data/raw/numinamath.jsonl
+    deps:
+    - path: data/raw/numinamath.jsonl
+      hash: md5
+      md5: 51feb5f71f8805c8a36b8cf87fe46365
+      size: 1589995
+    - path: src/data/clean_with_spark.py
+      hash: md5
+      md5: 4fe9ad1846df2ce147214627cb28341b
+      size: 1963
+    outs:
+    - path: data/cleaned/records
+      hash: md5
+      md5: 3793fe73f577f1a62db9f297c087e5c0.dir
+      size: 1830191
+      nfiles: 4
+    - path: reports/eda/quality.json
+      hash: md5
+      md5: 39a8a7066c4eec44e583b7e1114785a7
+      size: 198
+  split_and_validate:
+    cmd: python -m src.data.split_dataset data/cleaned/records/part-*.json
+    deps:
+    - path: data/cleaned/records
+      hash: md5
+      md5: 3793fe73f577f1a62db9f297c087e5c0.dir
+      size: 1830191
+      nfiles: 4
+    - path: src/data/split_dataset.py
+      hash: md5
+      md5: 3fbb1e0ae131642ed8baf4a6c107bbb0
+      size: 1300
+    outs:
+    - path: data/splits
+      hash: md5
+      md5: 0dbb1319c7d0082b9edb44a9d580f45b.dir
+      size: 1830598
+      nfiles: 3
+    - path: reports/eda/splits.json
+      hash: md5
+      md5: cc53672602a29739c8e520eee796a631
+      size: 356

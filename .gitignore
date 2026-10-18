@@ -1,4 +1,5 @@
 .venv/
+.tools/
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -9,6 +10,9 @@ data/raw/
 data/cleaned/
 data/splits/
 models/adapters/
+!models/
+!models/adapters/
+!models/adapters/*.dvc
 mlruns/
 mlartifacts/
 mlflow.db
