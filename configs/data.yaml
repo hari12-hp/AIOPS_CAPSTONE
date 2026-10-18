@@ -1,0 +1,6 @@
+dataset_id: AI-MO/NuminaMath-1.5
+revision: 1b05109f9e5c1ad06c0663519502416c30b300f8
+raw_scan_limit: 4000
+target_examples: 800
+seed: 42
+split_ratios: {train: 0.8, validation: 0.1, test: 0.1}

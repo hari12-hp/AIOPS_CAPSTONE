@@ -1,0 +1,31 @@
+stages:
+  inspect_and_ingest:
+    cmd: python -m src.data.inspect_dataset
+    deps: [src/data/inspect_dataset.py, artifacts/input/pilot-v1]
+    outs: [reports/runtime/environment.json]
+  ingest_dataset:
+    cmd: python -m src.data.ingest_dataset --revision 1b05109f9e5c1ad06c0663519502416c30b300f8 --scan-limit 4000 --target 800
+    deps: [src/data/ingest_dataset.py, configs/data.yaml]
+    outs: [data/raw/numinamath.jsonl, reports/eda/ingestion.json]
+  eda:
+    cmd: python -m src.data.eda data/raw/numinamath.jsonl
+    deps: [src/data/eda.py, data/raw/numinamath.jsonl]
+    outs: [reports/eda/report.json, reports/eda/sample_review.json]
+  clean_with_pyspark:
+    cmd: python -m src.data.clean_with_spark data/raw/numinamath.jsonl
+    deps: [src/data/clean_with_spark.py, data/raw/numinamath.jsonl]
+    outs: [data/cleaned/records, reports/eda/quality.json]
+  split_and_validate:
+    cmd: python -m src.data.split_dataset data/cleaned/records/part-*.json
+    deps: [src/data/split_dataset.py, data/cleaned/records]
+    outs: [data/splits, reports/eda/splits.json]
+  cpu_benchmark:
+    cmd: python -m src.training.train_lora_cpu --model google/gemma-3-1b-it --revision dcc83ea841ab6100d6b47a070329e1ba4cf78752 --output models/adapters/gemma-v2
+    deps: [src/training/train_lora_cpu.py, data/splits/train.jsonl]
+  train_gemma_cpu_v2:
+    cmd: echo 'Run only after cpu_benchmark produces a safe estimate.'
+    deps: [configs/train_gemma_v2.yaml]
+  evaluate_gemma_v2:
+    cmd: python -m src.training.evaluate_models --candidate gemma-v2
+    deps: [src/training/evaluate_models.py, data/splits/test.jsonl]
+    outs: [reports/evaluation/report.json]

@@ -1,0 +1,60 @@
+schema: '2.0'
+stages:
+  inspect_and_ingest:
+    cmd: python -m src.data.inspect_dataset
+    deps:
+    - path: artifacts/input/pilot-v1
+      hash: md5
+      md5: 47813302314c754f348fdbfd954c5cc7.dir
+      size: 5992190
+      nfiles: 2
+    - path: src/data/inspect_dataset.py
+      hash: md5
+      md5: db6e3fd16d9db885e71b651b3e9bc410
+      size: 1408
+    outs:
+    - path: reports/runtime/environment.json
+      hash: md5
+      md5: 7098318cde03ae9110ba9786facda093
+      size: 669
+  ingest_dataset:
+    cmd: python -m src.data.ingest_dataset --revision 
+      1b05109f9e5c1ad06c0663519502416c30b300f8 --scan-limit 4000 --target 800
+    deps:
+    - path: configs/data.yaml
+      hash: md5
+      md5: 7210720dcdbf90f3f537901b26f7f799
+      size: 190
+    - path: src/data/ingest_dataset.py
+      hash: md5
+      md5: c024aabfea9e37c11461e16d7fce6ee3
+      size: 2179
+    outs:
+    - path: data/raw/numinamath.jsonl
+      hash: md5
+      md5: 51feb5f71f8805c8a36b8cf87fe46365
+      size: 1589995
+    - path: reports/eda/ingestion.json
+      hash: md5
+      md5: 207ef2ac4c3db76156440061f8b94fda
+      size: 452
+  eda:
+    cmd: python -m src.data.eda data/raw/numinamath.jsonl
+    deps:
+    - path: data/raw/numinamath.jsonl
+      hash: md5
+      md5: 51feb5f71f8805c8a36b8cf87fe46365
+      size: 1589995
+    - path: src/data/eda.py
+      hash: md5
+      md5: fd34a326a8fe814133476c72aff6555f
+      size: 2209
+    outs:
+    - path: reports/eda/report.json
+      hash: md5
+      md5: a7294c8a647e6b0dc5de62687633fb17
+      size: 8958
+    - path: reports/eda/sample_review.json
+      hash: md5
+      md5: e59b71433cc0d628482b66501f54476c
+      size: 49045

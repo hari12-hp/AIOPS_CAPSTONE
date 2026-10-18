@@ -1,0 +1,16 @@
+# Install with: python -m pip install -r requirements.lock
+# Pins are deliberately explicit; resolve them in the project virtualenv and record
+# `pip freeze` in each MLflow run before a training run.
+--extra-index-url https://download.pytorch.org/whl/cpu
+transformers==4.57.1
+peft==0.17.1
+datasets==4.8.5
+accelerate==1.10.1
+torch==2.14.1+cpu
+pyspark==4.0.1
+dvc==3.67.1
+mlflow==3.15.1
+safetensors==0.6.2
+PyYAML==6.0.2
+pytest==8.4.2
+sympy==1.14.0

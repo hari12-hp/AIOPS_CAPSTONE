@@ -1,0 +1,5 @@
+[core]
+    no_scm = false
+    remote = localstorage
+['remote "localstorage"']
+    url = cache-store

@@ -1,0 +1,34 @@
+# Local Mathematics Assistant — CPU Training V2
+
+This repository is a CPU-only, local pipeline for bounded dataset ingestion, Spark cleaning, completion-only LoRA preparation, DVC orchestration and local MLflow lineage. It deliberately excludes APIs, frontends and deployment.
+
+## Status and safety gates
+
+Pilot V1 adapter files are stored under `artifacts/input/pilot-v1`. Its manifest and historical comparison CSV were not supplied, so its historical metrics cannot be verified. No model weights or dataset are downloaded by tests. Training is gated behind a preflight/benchmark because the machine has limited available RAM and no cached base model.
+
+## Reproduce
+
+```bash
+python -m venv .venv
+. .venv/bin/activate
+python -m pip install -r requirements.lock
+python -m src.data.inspect_dataset
+pytest -q
+python -m src.data.ingest_dataset --revision 1b05109f9e5c1ad06c0663519502416c30b300f8
+python -m src.data.eda data/raw/numinamath.jsonl
+python -m src.data.clean_with_spark data/raw/numinamath.jsonl
+python -m src.data.split_dataset data/cleaned/records/part-00000-*.json
+dvc dag
+```
+
+Run `python -m src.training.train_lora_cpu --help` for preflight commands. Do not start full training before a measured 3–5 step benchmark establishes memory and runtime headroom. The current trainer uses `float32`, batch size 1, rank 8, alpha 16 and the attention q/k/v/o projections.
+
+## Lineage
+
+Use a local MLflow store only, e.g. `mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlartifacts`. Record git/DVC identity, data hashes, base revision, adapter hashes and benchmark results in every training/evaluation run. Registration remains blocked until a trained adapter has been reloaded and evaluated on a held-out test split.
+
+PySpark requires a locally installed Java runtime. This machine currently has no `java` executable, so `clean_with_spark` intentionally fails with `JAVA_GATEWAY_EXITED` rather than substituting pandas. Install Java 17 or later, set `JAVA_HOME`, then rerun the Spark and split stages.
+
+## Deferred
+
+FastAPI, frontend, containers, deployment and monitoring are expressly out of scope.

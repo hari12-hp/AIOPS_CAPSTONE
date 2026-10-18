@@ -1,0 +1,6 @@
+name: local-math-assistant-cpu-training
+entry_points:
+  inspect:
+    command: python -m src.data.inspect_dataset
+  test:
+    command: pytest -q
