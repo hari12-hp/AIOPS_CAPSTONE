@@ -1,0 +1,7 @@
+[
+  {"id":"ALG-01","question":"Solve 2x + 3 = 11 for x. Give only the final value.","accepted_patterns":["(?<![0-9.])4(?![0-9.])"]},
+  {"id":"ARITH-01","question":"Compute 7 multiplied by 8. Give only the final value.","accepted_patterns":["(?<![0-9.])56(?![0-9.])"]},
+  {"id":"FRAC-01","question":"What is 3/4 plus 1/8? Give only the simplified fraction.","accepted_patterns":["7\\s*/\\s*8","\\\\frac\\{7\\}\\{8\\}"]},
+  {"id":"GEOM-01","question":"What is the area of a rectangle with length 9 and width 4? Give only the final value.","accepted_patterns":["(?<![0-9.])36(?![0-9.])"]},
+  {"id":"PCT-01","question":"What is 15 percent of 200? Give only the final value.","accepted_patterns":["(?<![0-9.])30(?![0-9.])"]}
+]

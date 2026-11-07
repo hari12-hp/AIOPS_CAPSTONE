@@ -3,9 +3,12 @@ services:
     build: {context: ., dockerfile: Dockerfile.backend}
     ports: ["8000:8000"]
     environment:
-      MATH_ASSISTANT_BASE_MODEL: ${MATH_ASSISTANT_BASE_MODEL:-}
-      MATH_ASSISTANT_BASE_REVISION: ${MATH_ASSISTANT_BASE_REVISION:-}
-      MATH_ASSISTANT_ADAPTER_PATH: ${MATH_ASSISTANT_ADAPTER_PATH:-}
+      MATH_ASSISTANT_BASE_MODEL: ${MATH_ASSISTANT_BASE_MODEL:-Qwen/Qwen2.5-0.5B-Instruct}
+      MATH_ASSISTANT_BASE_REVISION: ${MATH_ASSISTANT_BASE_REVISION:-7ae557604adf67be50417f59c2c2f167def9a775}
+      MATH_ASSISTANT_ADAPTER_PATH: ${MATH_ASSISTANT_ADAPTER_PATH:-/models/adapters/qwen-v2}
+    volumes:
+      - ./models/adapters:/models/adapters:ro
+      - ${HF_HOME:-./.hf-cache}:/root/.cache/huggingface
   frontend:
     build: {context: ., dockerfile: Dockerfile.frontend}
     ports: ["8080:80"]

@@ -26,7 +26,7 @@
 ## Evidence and limitations
 
 - [x] Gemma base, Pilot V1 and Gemma CPU V2 use the same held-out 73-row split; detailed reports are DVC tracked in `reports/evaluation/`.
-- [x] Gemma V2 is locally registered as `local-math-assistant-gemma-cpu-v2` version 1, status `needs_review`.
-- [x] Qwen V2 is also registered as a smaller CPU challenger.
-- [ ] A quality-approved staging alias is intentionally not assigned: loss improvements alone do not establish mathematical correctness; independent generated-answer acceptance tests are still required.
+- [x] Gemma V2 is locally registered as `local-math-assistant-gemma-cpu-v2` version 1, status `needs_review`; the acceptance benchmark correctly rejects it at 40%.
+- [x] Qwen V2 is registered as the smaller CPU challenger and is acceptance-tested at 5/5 (100%) on the predeclared smoke suite.
+- [x] The Qwen registry decision is evidence-based: the promotion helper refuses to mark a version accepted unless its persisted generation benchmark meets the declared threshold.
 - [x] `docker compose config` validates the backend, frontend, Prometheus and Grafana topology. Full image build/run is intentionally separated from the 12 GB CPU-training session and is documented as a deployment verification step.

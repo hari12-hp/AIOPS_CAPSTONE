@@ -2,7 +2,7 @@
 
 **Execution date:** 2026-11-07  
 **Command:** `python -m pytest -q`  
-**Result:** 9 passed, 0 failed.
+**Result:** 10 passed, 0 failed.
 
 | Group | Cases | Result |
 |---|---:|---|
@@ -11,6 +11,7 @@
 | Pilot LoRA configuration | 1 | Pass |
 | Metadata/evaluation contract | 1 | Pass |
 | API health, pipeline, validation and Prometheus endpoint | 4 | Pass |
+| Generated-answer benchmark definition | 1 | Pass |
 
 ## Functional evidence
 
@@ -23,6 +24,8 @@
 | Qwen CPU V2 LoRA | 73 | 1.3497 | 68.2 s |
 
 Completion loss is a language-model loss, not a mathematical correctness claim. The production-quality acceptance gate remains `needs_review` until independent generated-answer checks and an explicit quality threshold are added.
+
+The generated-answer gate has now been executed separately: Qwen V2 achieved 5/5 at the declared 80% threshold and is accepted for this bounded smoke suite; Gemma V2 achieved 2/5 and remains `needs_review`. See `docs/evaluation_report.md` for raw, DVC-tracked evidence and the exact scope of that decision.
 
 ## Operational verification
 

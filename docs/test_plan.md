@@ -23,6 +23,7 @@
 | API-02 | Pipeline endpoint | exposes reports when present |
 | API-03 | Pipeline observability contract | returns quality, splits, training, evaluation and configuration keys |
 | API-04 | Metrics endpoint | returns Prometheus text at `/metrics` |
+| EVAL-02 | Generated-answer suite definition | has unique case identifiers and predeclared acceptance patterns |
 | OPS-01 | Grafana provisioning | dashboard JSON and provider configuration are present and reference the provisioned Prometheus datasource |
 | OPS-02 | Docker boundary | frontend Nginx config proxies only health, API and metrics paths to `backend:8000` |
 

@@ -50,9 +50,13 @@ def health():
 @app.get("/v1/pipeline/status")
 def pipeline_status():
     report=settings.root/"reports/eda/quality.json"; splits=settings.root/"reports/eda/splits.json"
-    evaluation=settings.root/"reports/evaluation/gemma_v2.json"
-    training=settings.root/"models/adapters/gemma-v2/training_result.json"
-    return {"quality":load_json(report),"splits":load_json(splits),"evaluation":load_json(evaluation),"training":load_json(training),"model_loaded":service.ready,"model_configured":bool(settings.base_model and settings.adapter_path)}
+    candidates = {
+        "qwen_cpu_v2": {"training": load_json(settings.root/"models/adapters/qwen-v2/training_result.json"), "completion_evaluation": load_json(settings.root/"reports/evaluation/qwen_lora_v2.json"), "generation_acceptance": load_json(settings.root/"reports/evaluation/qwen_v2_generation.json")},
+        "gemma_cpu_v2": {"training": load_json(settings.root/"models/adapters/gemma-v2/training_result.json"), "completion_evaluation": load_json(settings.root/"reports/evaluation/gemma_v2.json"), "generation_acceptance": load_json(settings.root/"reports/evaluation/gemma_v2_generation.json")},
+    }
+    configured = "qwen_cpu_v2" if "qwen" in (settings.adapter_path or "").lower() else "gemma_cpu_v2"
+    selected = candidates[configured]
+    return {"quality":load_json(report),"splits":load_json(splits),"evaluation":selected["completion_evaluation"],"training":selected["training"],"candidates":candidates,"configured_candidate":configured,"model_loaded":service.ready,"model_configured":bool(settings.base_model and settings.adapter_path)}
 
 @app.post("/v1/solve",response_model=SolveResponse)
 def solve(payload: SolveRequest):
