@@ -31,6 +31,7 @@ class ModelService:
         LOGGER.info("model_loaded model=%s revision=%s seconds=%.3f", self.config.base_model, self.config.base_revision, perf_counter()-started)
 
     def solve(self, question: str) -> tuple[str, float]:
+        import torch
         with self._lock:
             self._load(); started=perf_counter()
             messages=[{"role":"system","content":"Solve the mathematics problem carefully. Show concise reasoning and a final answer."},{"role":"user","content":question}]
