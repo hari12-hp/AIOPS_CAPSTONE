@@ -4,7 +4,7 @@
 
 - [x] Web UI: `frontend/` with responsive status, pipeline view and solve workflow.
 - [x] ML pipeline view: `/v1/pipeline/status` displays Spark quality metrics and split hashes.
-- [x] Pipeline operations: DVC DAG, MLflow runs, API health and Prometheus metrics provide run/error/status views.
+- [x] Pipeline operations: DVC DAG, MLflow runs, API health/pipeline console, structured logs, Prometheus metrics and a provisioned Grafana dashboard provide run/error/status views.
 - [x] User manual: `docs/user_manual.md`.
 
 ## Software Engineering
@@ -20,8 +20,8 @@
 - [x] Data engineering: bounded Parquet ingest, Spark cleaning and deterministic split; reports record 88.9 records/s cleaning throughput.
 - [x] Source/version control: Git commits, DVC local remote, DVC DAG and DVC adapter/report pointers.
 - [x] Experiment tracking: local MLflow SQLite runs/registers adapters and captures parameters, metrics, artifacts and validation status.
-- [x] Instrumentation: Prometheus `/metrics`, scrape configuration and Grafana datasource provisioning.
-- [x] Packaging: MLproject, FastAPI backend Dockerfile, independent static frontend Dockerfile and Docker Compose stack.
+- [x] Instrumentation: Prometheus `/metrics`, scrape configuration, Grafana datasource, and provisioned rate/latency/error dashboard.
+- [x] Packaging: MLproject, FastAPI backend Dockerfile, Nginx-proxied independent static frontend Dockerfile and Docker Compose stack.
 
 ## Evidence and limitations
 
@@ -29,4 +29,4 @@
 - [x] Gemma V2 is locally registered as `local-math-assistant-gemma-cpu-v2` version 1, status `needs_review`.
 - [x] Qwen V2 is also registered as a smaller CPU challenger.
 - [ ] A quality-approved staging alias is intentionally not assigned: loss improvements alone do not establish mathematical correctness; independent generated-answer acceptance tests are still required.
-- [ ] Docker runtime was not started during the CPU training run to preserve the 12 GB working-memory budget. The API is smoke-tested in-process.
+- [x] `docker compose config` validates the backend, frontend, Prometheus and Grafana topology. Full image build/run is intentionally separated from the 12 GB CPU-training session and is documented as a deployment verification step.

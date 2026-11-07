@@ -7,6 +7,8 @@
 3. LoRA preflight has nonzero trainable parameters and response-only labels.
 4. API health and pipeline endpoints respond without loading model weights.
 5. A trained adapter is reloadable with its declared base model and evaluated on the held-out split.
+6. Prometheus is available at exactly `/metrics` (no redirect) so the configured scraper has a stable endpoint.
+7. The Docker UI reverse proxy sends REST calls to the separately deployed backend; the frontend never embeds model configuration.
 
 ## Test cases
 
@@ -19,5 +21,9 @@
 | EVAL-01 | Git metadata fallback | metadata contract remains explicit without Git |
 | API-01 | Health endpoint | returns status and does not initialize a model |
 | API-02 | Pipeline endpoint | exposes reports when present |
+| API-03 | Pipeline observability contract | returns quality, splits, training, evaluation and configuration keys |
+| API-04 | Metrics endpoint | returns Prometheus text at `/metrics` |
+| OPS-01 | Grafana provisioning | dashboard JSON and provider configuration are present and reference the provisioned Prometheus datasource |
+| OPS-02 | Docker boundary | frontend Nginx config proxies only health, API and metrics paths to `backend:8000` |
 
-Run `pytest -q`; save the terminal output in the submission report. Functional acceptance is met only when all tests pass and the relevant DVC/MLflow runs are recorded.
+Run `pytest -q`; save the terminal output in the submission report. Run `docker compose config` to validate the four-service deployment topology before Docker execution. Functional acceptance is met only when all tests pass and the relevant DVC/MLflow runs are recorded.

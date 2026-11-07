@@ -9,6 +9,7 @@ services:
   frontend:
     build: {context: ., dockerfile: Dockerfile.frontend}
     ports: ["8080:80"]
+    depends_on: [backend]
   prometheus:
     image: prom/prometheus:v3.0.0
     volumes: ["./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]

@@ -5,12 +5,12 @@ from src.data.common import read_jsonl
 from src.training.prompting import completion_labels
 
 def main():
-    parser=argparse.ArgumentParser(); parser.add_argument("--model",required=True); parser.add_argument("--revision"); parser.add_argument("--train-data",default="data/splits/train.jsonl"); parser.add_argument("--output",required=True); parser.add_argument("--max-length",type=int,default=256); parser.add_argument("--threads",type=int,default=6); parser.add_argument("--benchmark-steps",type=int,default=0); parser.add_argument("--epochs",type=float,default=1); parser.add_argument("--learning-rate",type=float,default=5e-5); parser.add_argument("--train",action="store_true"); args=parser.parse_args()
+    parser=argparse.ArgumentParser(); parser.add_argument("--model",required=True); parser.add_argument("--revision"); parser.add_argument("--train-data",default="data/splits/train.jsonl"); parser.add_argument("--output",required=True); parser.add_argument("--max-length",type=int,default=256); parser.add_argument("--threads",type=int,default=6); parser.add_argument("--benchmark-steps",type=int,default=0); parser.add_argument("--benchmark-report",default="reports/runtime/benchmark.json"); parser.add_argument("--max-rss-gib",type=float); parser.add_argument("--epochs",type=float,default=1); parser.add_argument("--learning-rate",type=float,default=5e-5); parser.add_argument("--train",action="store_true"); args=parser.parse_args()
     try:
         import torch; from transformers import AutoModelForCausalLM, AutoTokenizer, Trainer, TrainingArguments; from peft import LoraConfig,get_peft_model
     except ImportError as exc: raise SystemExit("Install requirements.lock before training: "+str(exc))
     torch.set_num_threads(args.threads); tokenizer=AutoTokenizer.from_pretrained(args.model,revision=args.revision); tokenizer.pad_token=tokenizer.pad_token or tokenizer.eos_token
-    model=AutoModelForCausalLM.from_pretrained(args.model,revision=args.revision,torch_dtype=torch.float32,low_cpu_mem_usage=True); model.config.use_cache=False
+    model=AutoModelForCausalLM.from_pretrained(args.model,revision=args.revision,dtype=torch.float32,low_cpu_mem_usage=True); model.config.use_cache=False
     targets=[x for x in ("q_proj","k_proj","v_proj","o_proj") if any(n.endswith(x) for n,_ in model.named_modules())]
     if len(targets)!=4: raise SystemExit(f"Unsupported LoRA targets; detected {targets}")
     model=get_peft_model(model,LoraConfig(r=8,lora_alpha=16,lora_dropout=.05,target_modules=targets,task_type="CAUSAL_LM")); trainable=sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -39,7 +39,11 @@ def main():
             loss.backward(); optimizer.step(); optimizer.zero_grad(); losses.append(float(loss.detach()))
         seconds=time.monotonic()-started
         report={**preflight,"benchmark_steps":args.benchmark_steps,"seconds":seconds,"seconds_per_step":seconds/args.benchmark_steps,"losses":losses,"process_rss_bytes":psutil.Process().memory_info().rss}
-        Path("reports/runtime").mkdir(parents=True,exist_ok=True); Path("reports/runtime/qwen_benchmark.json").write_text(json.dumps(report,indent=2)+"\n"); print(json.dumps(report));
+        rss_gib=report["process_rss_bytes"] / 1024**3
+        report["process_rss_gib"]=rss_gib
+        report_path=Path(args.benchmark_report); report_path.parent.mkdir(parents=True,exist_ok=True); report_path.write_text(json.dumps(report,indent=2)+"\n"); print(json.dumps(report))
+        if args.max_rss_gib is not None and rss_gib > args.max_rss_gib:
+            raise SystemExit(f"Benchmark RSS {rss_gib:.2f} GiB exceeds approved limit {args.max_rss_gib:.2f} GiB")
         if not args.train: return
     elif not args.train:
         print(json.dumps(preflight)); return

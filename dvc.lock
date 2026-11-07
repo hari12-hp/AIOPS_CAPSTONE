@@ -1,7 +1,7 @@
 schema: '2.0'
 stages:
   inspect_and_ingest:
-    cmd: python -m src.data.inspect_dataset
+    cmd: .venv/bin/python -m src.data.inspect_dataset
     deps:
     - path: artifacts/input/pilot-v1
       hash: md5
@@ -15,10 +15,10 @@ stages:
     outs:
     - path: reports/runtime/environment.json
       hash: md5
-      md5: 7098318cde03ae9110ba9786facda093
-      size: 669
+      md5: 2e66c473b7fef5a33beb9a88ec6389dd
+      size: 707
   ingest_dataset:
-    cmd: python -m src.data.ingest_dataset --revision 
+    cmd: .venv/bin/python -m src.data.ingest_dataset --revision 
       1b05109f9e5c1ad06c0663519502416c30b300f8 --scan-limit 4000 --target 800
     deps:
     - path: configs/data.yaml
@@ -36,10 +36,10 @@ stages:
       size: 1589995
     - path: reports/eda/ingestion.json
       hash: md5
-      md5: 207ef2ac4c3db76156440061f8b94fda
-      size: 452
+      md5: 04abdf299290bca11911e48c2acbbda9
+      size: 451
   eda:
-    cmd: python -m src.data.eda data/raw/numinamath.jsonl
+    cmd: .venv/bin/python -m src.data.eda data/raw/numinamath.jsonl
     deps:
     - path: data/raw/numinamath.jsonl
       hash: md5
@@ -52,14 +52,14 @@ stages:
     outs:
     - path: reports/eda/report.json
       hash: md5
-      md5: a7294c8a647e6b0dc5de62687633fb17
+      md5: db5efb721b46af5f18bcfd31fb03f847
       size: 8958
     - path: reports/eda/sample_review.json
       hash: md5
       md5: e59b71433cc0d628482b66501f54476c
       size: 49045
   clean_with_pyspark:
-    cmd: python -m src.data.clean_with_spark data/raw/numinamath.jsonl
+    cmd: .venv/bin/python -m src.data.clean_with_spark data/raw/numinamath.jsonl
     deps:
     - path: data/raw/numinamath.jsonl
       hash: md5
@@ -72,19 +72,20 @@ stages:
     outs:
     - path: data/cleaned/records
       hash: md5
-      md5: 3793fe73f577f1a62db9f297c087e5c0.dir
+      md5: 2756337d67467efbf6c886b61b713681.dir
       size: 1830191
       nfiles: 4
     - path: reports/eda/quality.json
       hash: md5
-      md5: 39a8a7066c4eec44e583b7e1114785a7
-      size: 198
+      md5: 4ae37e3268f04f345350c37f5c376497
+      size: 199
   split_and_validate:
-    cmd: python -m src.data.split_dataset data/cleaned/records/part-*.json
+    cmd: .venv/bin/python -m src.data.split_dataset 
+      data/cleaned/records/part-*.json
     deps:
     - path: data/cleaned/records
       hash: md5
-      md5: 3793fe73f577f1a62db9f297c087e5c0.dir
+      md5: 2756337d67467efbf6c886b61b713681.dir
       size: 1830191
       nfiles: 4
     - path: src/data/split_dataset.py
@@ -101,3 +102,22 @@ stages:
       hash: md5
       md5: cc53672602a29739c8e520eee796a631
       size: 356
+  cpu_benchmark:
+    cmd: .venv/bin/python -m src.training.train_lora_cpu --model 
+      google/gemma-3-1b-it --revision dcc83ea841ab6100d6b47a070329e1ba4cf78752 
+      --output models/adapters/gemma-v2 --benchmark-steps 3 --benchmark-report 
+      reports/runtime/gemma_benchmark.json --max-rss-gib 8
+    deps:
+    - path: data/splits/train.jsonl
+      hash: md5
+      md5: e81a566c6c66eacf8d91d58ff4ec28e2
+      size: 1477119
+    - path: src/training/train_lora_cpu.py
+      hash: md5
+      md5: 64927e000fbf5687418f69e5297de04b
+      size: 5467
+    outs:
+    - path: reports/runtime/gemma_benchmark.json
+      hash: md5
+      md5: 7b0f4c91eb7c68fc863fa51e7a8d3ddf
+      size: 450

@@ -2,7 +2,7 @@
 
 **Execution date:** 2026-11-07  
 **Command:** `python -m pytest -q`  
-**Result:** 8 passed, 0 failed.
+**Result:** 9 passed, 0 failed.
 
 | Group | Cases | Result |
 |---|---:|---|
@@ -10,7 +10,7 @@
 | Prompt completion masking | 1 | Pass |
 | Pilot LoRA configuration | 1 | Pass |
 | Metadata/evaluation contract | 1 | Pass |
-| API health, pipeline and request validation | 3 | Pass |
+| API health, pipeline, validation and Prometheus endpoint | 4 | Pass |
 
 ## Functional evidence
 
@@ -23,3 +23,14 @@
 | Qwen CPU V2 LoRA | 73 | 1.3497 | 68.2 s |
 
 Completion loss is a language-model loss, not a mathematical correctness claim. The production-quality acceptance gate remains `needs_review` until independent generated-answer checks and an explicit quality threshold are added.
+
+## Operational verification
+
+| Check | Command | Result |
+|---|---|---|
+| DVC graph and cache state | `dvc dag`, `dvc status` | Pass; graph is current. The expensive completed training/evaluation stages are frozen and their artifacts are independently DVC-tracked. |
+| CPU safety gate | Gemma three-step benchmark with `--max-rss-gib 8` | Pass; 4.655 s/microstep, 5.89 GiB RSS. |
+| Compose topology | `docker compose config` | Pass; backend, Nginx frontend, Prometheus and Grafana resolve. |
+| Grafana assets | JSON/provider parse check | Pass; dashboard is provisioned from source with rate, p95 latency, errors and successful-solve panels. |
+
+The full Docker image build/run was not combined with the completed 12 GB CPU training session; this avoids competing model and container workloads. Its reproducible deployment command is documented in the user manual.
