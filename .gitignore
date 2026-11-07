@@ -16,6 +16,7 @@ models/adapters/
 mlruns/
 mlartifacts/
 mlflow.db
+mlflow_migrated.db*
 spark-warehouse/
 metastore_db/
 checkpoints/

@@ -1,0 +1,19 @@
+services:
+  backend:
+    build: {context: ., dockerfile: Dockerfile.backend}
+    ports: ["8000:8000"]
+    environment:
+      MATH_ASSISTANT_BASE_MODEL: ${MATH_ASSISTANT_BASE_MODEL:-}
+      MATH_ASSISTANT_BASE_REVISION: ${MATH_ASSISTANT_BASE_REVISION:-}
+      MATH_ASSISTANT_ADAPTER_PATH: ${MATH_ASSISTANT_ADAPTER_PATH:-}
+  frontend:
+    build: {context: ., dockerfile: Dockerfile.frontend}
+    ports: ["8080:80"]
+  prometheus:
+    image: prom/prometheus:v3.0.0
+    volumes: ["./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]
+    ports: ["9090:9090"]
+  grafana:
+    image: grafana/grafana:11.4.0
+    ports: ["3000:3000"]
+    volumes: ["./monitoring/grafana:/etc/grafana/provisioning:ro"]

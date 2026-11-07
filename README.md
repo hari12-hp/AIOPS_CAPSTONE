@@ -1,6 +1,6 @@
 # Local Mathematics Assistant — CPU Training V2
 
-This repository is a CPU-only, local pipeline for bounded dataset ingestion, Spark cleaning, completion-only LoRA preparation, DVC orchestration and local MLflow lineage. It deliberately excludes APIs, frontends and deployment.
+This repository is a CPU-only, local Mathematics Assistant with bounded data ingestion, Spark cleaning, completion-only LoRA preparation, DVC/MLflow lineage, a FastAPI service, static web UI, Prometheus metrics, Grafana provisioning, and Docker Compose packaging.
 
 ## Status and safety gates
 
@@ -29,6 +29,6 @@ Use a local MLflow store only, e.g. `mlflow server --backend-store-uri sqlite://
 
 PySpark requires a locally installed Java runtime. This machine currently has no `java` executable, so `clean_with_spark` intentionally fails with `JAVA_GATEWAY_EXITED` rather than substituting pandas. Install Java 17 or later, set `JAVA_HOME`, then rerun the Spark and split stages.
 
-## Deferred
+## Application and monitoring
 
-FastAPI, frontend, containers, deployment and monitoring are expressly out of scope.
+Start the full local stack with `docker compose up --build`. The UI is available at `http://localhost:8080`, the API docs at `http://localhost:8000/docs`, Prometheus at `http://localhost:9090`, and Grafana at `http://localhost:3000`. See `docs/user_manual.md`, `docs/architecture.md`, `docs/low_level_design.md`, `docs/test_plan.md`, and `docs/test_report.md`.

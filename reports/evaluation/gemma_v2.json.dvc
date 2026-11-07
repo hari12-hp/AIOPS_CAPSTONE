@@ -1,0 +1,5 @@
+outs:
+- md5: 040e7fbbf8334cedf88c770c87c41508
+  size: 386
+  hash: md5
+  path: gemma_v2.json

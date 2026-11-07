@@ -17,14 +17,14 @@ class AdapterPyfunc(mlflow.pyfunc.PythonModel):
         return [self.tokenizer.decode(row,skip_special_tokens=True) for row in generated]
 
 def main():
-    parser=argparse.ArgumentParser(); parser.add_argument("--adapter",required=True); parser.add_argument("--model",required=True); parser.add_argument("--revision"); parser.add_argument("--name",default="local-math-assistant-qwen-cpu-v2"); args=parser.parse_args()
+    parser=argparse.ArgumentParser(); parser.add_argument("--adapter",required=True); parser.add_argument("--model",required=True); parser.add_argument("--revision"); parser.add_argument("--evaluation",required=True); parser.add_argument("--name",required=True); args=parser.parse_args()
     import mlflow
     from mlflow.tracking import MlflowClient
     root=Path.cwd(); mlflow.set_tracking_uri(f"sqlite:///{root/'mlflow.db'}"); mlflow.set_experiment("local-math-assistant-cpu-training")
-    evaluation=json.loads((root/"reports/evaluation/qwen_lora_v2.json").read_text()); training=json.loads((Path(args.adapter)/"training_result.json").read_text())
+    evaluation=json.loads(Path(args.evaluation).read_text()); training=json.loads((Path(args.adapter)/"training_result.json").read_text())
     wrapper=AdapterPyfunc(); wrapper.model_id=args.model; wrapper.revision=args.revision
     with mlflow.start_run(run_name="qwen-cpu-v2-train-evaluate-register") as run:
-        mlflow.log_params({"base_model":args.model,"base_revision":args.revision or "unresolved","lora_r":8,"lora_alpha":16,"lora_dropout":0.05,"train_examples":642,"validation_examples":83,"test_examples":73,"dtype":"float32","cpu_threads":6})
+        mlflow.log_params({"base_model":args.model,"base_revision":args.revision or "unresolved","lora_r":8,"lora_alpha":16,"lora_dropout":0.05,"test_examples":evaluation["test_input_count"],"dtype":"float32","cpu_threads":6})
         mlflow.log_metrics({"train_loss":training["metrics"]["train_loss"],"test_completion_loss":evaluation["mean_completion_loss"],"training_seconds":training["metrics"]["train_runtime"]})
         mlflow.set_tags({"validation_status":"needs_review","reason":"No independent generation benchmark or acceptance threshold has been completed","base_model_revision_status":"unresolved"})
         info=mlflow.pyfunc.log_model("model",python_model=wrapper,artifacts={"adapter":str(Path(args.adapter).resolve())},pip_requirements=["transformers==4.57.1","peft==0.17.1","torch==2.14.1+cpu"])
