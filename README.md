@@ -21,6 +21,10 @@ python -m src.data.split_dataset data/cleaned/records/part-00000-*.json
 dvc dag
 ```
 
+## One-command submission evaluation
+
+After the initial environment setup, run `./scripts/evaluate_submission.sh`. It restores DVC artifacts, runs tests, validates the DVC graph, Compose topology and Grafana dashboard, then checks the stored Qwen V2 quality decision. Add `--full` to rerun the deterministic five-case generated-answer acceptance gate; the rerun is written under `reports/runtime/` and does not overwrite the submitted DVC evidence.
+
 Run `python -m src.training.train_lora_cpu --help` for preflight commands. Do not start full training before a measured 3–5 step benchmark establishes memory and runtime headroom. The current trainer uses `float32`, batch size 1, rank 8, alpha 16 and the attention q/k/v/o projections. The recorded Gemma preflight stayed below the explicit 8 GiB process-RSS gate.
 
 ## Lineage

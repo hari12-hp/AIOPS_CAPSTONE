@@ -8,3 +8,7 @@
 6. For quality evidence, review `docs/evaluation_report.md` and the DVC-tracked `reports/evaluation/qwen_v2_generation.json`. The current benchmark is a small acceptance suite, not a promise that every math question will be correct.
 
 Never enter Hugging Face tokens in the UI. Authenticate the local training environment through `hf auth login`.
+
+## Evaluator shortcut
+
+Run `./scripts/evaluate_submission.sh` from the repository root for the non-interactive validation sequence. Add `--full` to rerun the Qwen generated-answer acceptance gate. The script does not build or start containers; after it passes, use `docker compose up --build` to demonstrate the UI and monitoring stack.
