@@ -4,7 +4,7 @@ A CPU mathematics practice application with a separate web workspace and pipelin
 
 ![Math Studio workspace](docs/screenshots/workspace.jpg)
 
-## here are some commands for navigating through project
+## here are some commands for navigating through project, run fisrt command for reproducing whole project, run second command to evalute the existing artifacts
 
 ```bash
 # Fresh checkout: download pinned Hugging Face resources, build, train and verify
@@ -24,7 +24,7 @@ Install Python 3.14.6, Java 17+, Git, `flock`, Docker and Compose v2 first. Both
 
 ## Run the application
 
-The demonstration machine already has the environment, artifacts and pinned base-model cache. Start the complete local stack:
+before reaching to this links ensure : demonstration machine already has the environment, artifacts and pinned base-model cache. Start the complete local stack and verify the project :
 
 ```bash
 ./scripts/start_demo.sh
