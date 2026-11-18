@@ -92,7 +92,7 @@ The selected public Qwen 2.5 0.5B model is pinned to a base revision and trained
 
 Historical Gemma experiments remain in the evaluation evidence. The fresh rebuild and deployed champion use Qwen.please find mandatory design documents here, though i did metnion this my report too briefly :
 
-## Submission documents
+## Submission documents required for evaluation, please find them via this index
 
 - [Architecture and diagram](docs/architecture.md), [high-level design](docs/high_level_design.md), [low-level design/API I/O](docs/low_level_design.md).
 - [Data card](docs/data_card.md), [model card](docs/model_card.md).
@@ -101,7 +101,6 @@ Historical Gemma experiments remain in the evaluation evidence. The fresh rebuil
 - [Rubric evidence map](docs/rubric_evidence.md)
 - [A4 project report](docs/project_report.pdf), [third-party resources](THIRD_PARTY_NOTICES.md).
 
-After final verification, `.venv/bin/dvc push` populates the **local** artifact remote, then `.venv/bin/python scripts/package_submission.py` creates `output/submission/math-studio-submission.zip` with a manifest and SHA-256 checksum. This does not push anything to GitHub. Do not commit `.env`, model caches, SQLite databases, virtual environments or the ZIP; their ignore rules are supplied.
 
 
 
