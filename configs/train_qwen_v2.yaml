@@ -7,5 +7,5 @@ learning_rate: 5.0e-5
 micro_batch_size: 1
 gradient_accumulation_steps: 4
 epochs: 1
-cpu_threads: 6
+cpu_threads: 4
 dtype: float32

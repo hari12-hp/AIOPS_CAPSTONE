@@ -1,0 +1,13 @@
+{
+  "candidate": "adapter",
+  "model": "google/gemma-3-1b-it",
+  "revision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
+  "adapter": "artifacts/input/pilot-v1",
+  "test_input_count": 73,
+  "scored": 73,
+  "rejected_fully_truncated": 0,
+  "mean_completion_loss": 1.976534369873674,
+  "seconds": 150.7578585010051,
+  "seconds_per_scored": 2.065176143849385,
+  "status": "completed"
+}

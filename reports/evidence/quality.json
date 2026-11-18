@@ -1,0 +1,9 @@
+{
+  "input_count": 800,
+  "output_count": 799,
+  "rejected_malformed": 1,
+  "duplicates": 0,
+  "seconds": 10.590464893999979,
+  "records_per_second": 75.44521350990239,
+  "engine": "pyspark-local"
+}

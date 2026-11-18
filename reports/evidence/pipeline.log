@@ -1,0 +1,162 @@
+Running stage 'inspect':
+> .venv/bin/python -m src.pipeline.stage inspect -- python -m src.data.inspect_dataset
+{
+  "python": "3.14.6",
+  "platform": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+  "cpu_count_logical": 16,
+  "disk_free_bytes": 21350096896,
+  "git_commit": "a9deb3287752cd74f0e4db5eb826a3939fb5c547",
+  "git_dirty": true,
+  "pilot": {
+    "pilot_manifest.json": {
+      "present": false
+    },
+    "base_vs_lora_comparison.csv": {
+      "present": false
+    },
+    "adapter_config.json": {
+      "present": true,
+      "sha256": "83486d1015be936a663562f79572e4f8ea792aa8bcc4ec325068bdcb469f0b0a",
+      "bytes": 1126
+    },
+    "adapter_model.safetensors": {
+      "present": true,
+      "sha256": "07c2c2d754d44e2b130350ac3cc768aea41a3398e1992de07b687b256d178f80",
+      "bytes": 5991064
+    }
+  }
+}
+Updating lock file 'dvc.lock'
+
+Running stage 'ingest':
+> .venv/bin/python -m src.pipeline.stage ingest -- python -m src.data.ingest_dataset --revision 1b05109f9e5c1ad06c0663519502416c30b300f8 --scan-limit 4000 --target 800
+Updating lock file 'dvc.lock'
+
+Running stage 'clean':
+> .venv/bin/python -m src.pipeline.stage clean -- python -m src.data.clean_with_spark data/raw/numinamath.jsonl
+WARNING: Using incubator modules: jdk.incubator.vector
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+26/11/18 18:55:05 WARN Utils: Your hostname, positive, resolves to a loopback address: 127.0.1.1; using 10.44.6.119 instead (on interface wlp3s0)
+26/11/18 18:55:05 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+26/11/18 18:55:05 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+[Stage 7:>                                                          (0 + 1) / 1]                                                                                Updating lock file 'dvc.lock'
+
+Running stage 'split':
+> .venv/bin/python -m src.pipeline.stage split -- python -m src.data.split_dataset "data/cleaned/records/part-*.json"
+Updating lock file 'dvc.lock'
+
+Running stage 'benchmark':
+> .venv/bin/python -m src.pipeline.stage benchmark -- python -m src.training.train_lora_cpu --model Qwen/Qwen2.5-0.5B-Instruct --revision 7ae557604adf67be50417f59c2c2f167def9a775 --output reports/runtime/benchmark-adapter --benchmark-steps 3 --benchmark-report reports/pipeline/benchmark.json --max-rss-gib 6
+{"preflight": "passed", "trainable_parameters": 1081344, "records": 634, "rejected_fully_truncated": 8, "targets": ["q_proj", "k_proj", "v_proj", "o_proj"], "benchmark_steps": 3, "seconds": 6.326062049999564, "seconds_per_step": 2.1086873499998546, "losses": [1.5229690074920654, 1.232158899307251, 1.1999448537826538], "process_rss_bytes": 3772571648, "process_rss_gib": 3.5134811401367188}
+Updating lock file 'dvc.lock'
+
+Running stage 'train':
+> .venv/bin/python -m src.pipeline.stage train -- python -m src.training.train_lora_cpu --model Qwen/Qwen2.5-0.5B-Instruct --revision 7ae557604adf67be50417f59c2c2f167def9a775 --train-data data/splits/train.jsonl --output models/adapters/qwen-v2 --max-length 256 --threads 4 --epochs 1 --learning-rate 5e-5 --train
+  0%|          | 0/159 [00:00<?, ?it/s]  1%|          | 1/159 [00:10<28:33, 10.84s/it]  1%|▏         | 2/159 [00:20<27:03, 10.34s/it]  2%|▏         | 3/159 [00:31<27:00, 10.39s/it]  3%|▎         | 4/159 [00:41<26:46, 10.37s/it]  3%|▎         | 5/159 [00:51<26:16, 10.23s/it]                                                 3%|▎         | 5/159 [00:52<26:16, 10.23s/it]  4%|▍         | 6/159 [01:02<26:46, 10.50s/it]  4%|▍         | 7/159 [01:12<26:13, 10.35s/it]  5%|▌         | 8/159 [01:21<24:41,  9.81s/it]  6%|▌         | 9/159 [01:31<24:44,  9.90s/it]  6%|▋         | 10/159 [01:40<23:52,  9.62s/it]                                                  6%|▋         | 10/159 [01:40<23:52,  9.62s/it]  7%|▋         | 11/159 [01:50<23:47,  9.64s/it]  8%|▊         | 12/159 [02:00<23:57,  9.78s/it]  8%|▊         | 13/159 [02:10<23:59,  9.86s/it]  9%|▉         | 14/159 [02:20<24:03,  9.95s/it]  9%|▉         | 15/159 [02:30<23:58,  9.99s/it]                                                  9%|▉         | 15/159 [02:30<23:58,  9.99s/it] 10%|█         | 16/159 [02:40<23:56, 10.05s/it] 11%|█         | 17/159 [02:50<23:47, 10.06s/it] 11%|█▏        | 18/159 [03:00<23:38, 10.06s/it] 12%|█▏        | 19/159 [03:10<23:29, 10.07s/it] 13%|█▎        | 20/159 [03:21<23:23, 10.10s/it]                                                 13%|█▎        | 20/159 [03:21<23:23, 10.10s/it] 13%|█▎        | 21/159 [03:31<23:16, 10.12s/it] 14%|█▍        | 22/159 [03:40<22:23,  9.81s/it] 14%|█▍        | 23/159 [03:51<23:17, 10.28s/it] 15%|█▌        | 24/159 [04:10<28:44, 12.78s/it] 16%|█▌        | 25/159 [04:21<27:12, 12.18s/it]                                                 16%|█▌        | 25/159 [04:21<27:12, 12.18s/it] 16%|█▋        | 26/159 [04:31<25:53, 11.68s/it] 17%|█▋        | 27/159 [04:42<25:19, 11.51s/it] 18%|█▊        | 28/159 [04:53<24:20, 11.15s/it] 18%|█▊        | 29/159 [05:03<23:38, 10.91s/it] 19%|█▉        | 30/159 [05:14<23:38, 11.00s/it]                                                 19%|█▉        | 30/159 [05:14<23:38, 11.00s/it] 19%|█▉        | 31/159 [05:25<23:17, 10.92s/it] 20%|██        | 32/159 [05:36<23:01, 10.88s/it] 21%|██        | 33/159 [05:47<22:56, 10.93s/it] 21%|██▏       | 34/159 [05:58<22:54, 11.00s/it] 22%|██▏       | 35/159 [06:09<22:44, 11.01s/it]                                                 22%|██▏       | 35/159 [06:09<22:44, 11.01s/it] 23%|██▎       | 36/159 [06:18<21:35, 10.53s/it] 23%|██▎       | 37/159 [06:29<21:25, 10.54s/it] 24%|██▍       | 38/159 [06:39<21:17, 10.56s/it] 25%|██▍       | 39/159 [06:48<20:13, 10.11s/it] 25%|██▌       | 40/159 [06:59<20:13, 10.20s/it]                                                 25%|██▌       | 40/159 [06:59<20:13, 10.20s/it] 26%|██▌       | 41/159 [07:09<20:09, 10.25s/it] 26%|██▋       | 42/159 [07:18<19:22,  9.93s/it] 27%|██▋       | 43/159 [07:29<19:16,  9.97s/it] 28%|██▊       | 44/159 [07:39<19:18, 10.07s/it] 28%|██▊       | 45/159 [07:49<19:19, 10.18s/it]                                                 28%|██▊       | 45/159 [07:49<19:19, 10.18s/it] 29%|██▉       | 46/159 [08:00<19:16, 10.23s/it] 30%|██▉       | 47/159 [08:08<18:13,  9.77s/it] 30%|███       | 48/159 [08:19<18:22,  9.93s/it] 31%|███       | 49/159 [08:29<18:28, 10.08s/it] 31%|███▏      | 50/159 [08:39<18:26, 10.15s/it]                                                 31%|███▏      | 50/159 [08:39<18:26, 10.15s/it] 32%|███▏      | 51/159 [08:51<18:53, 10.50s/it] 33%|███▎      | 52/159 [08:59<17:49, 10.00s/it] 33%|███▎      | 53/159 [09:11<18:32, 10.49s/it] 34%|███▍      | 54/159 [09:22<18:39, 10.66s/it] 35%|███▍      | 55/159 [09:33<18:38, 10.76s/it]                                                 35%|███▍      | 55/159 [09:33<18:38, 10.76s/it] 35%|███▌      | 56/159 [09:44<18:36, 10.84s/it] 36%|███▌      | 57/159 [09:54<18:05, 10.64s/it] 36%|███▋      | 58/159 [10:05<17:47, 10.57s/it] 37%|███▋      | 59/159 [10:14<17:00, 10.21s/it] 38%|███▊      | 60/159 [10:24<16:28,  9.98s/it]                                                 38%|███▊      | 60/159 [10:24<16:28,  9.98s/it] 38%|███▊      | 61/159 [10:34<16:21, 10.02s/it] 39%|███▉      | 62/159 [10:44<16:19, 10.10s/it] 40%|███▉      | 63/159 [10:54<16:13, 10.14s/it] 40%|████      | 64/159 [11:03<15:38,  9.87s/it] 41%|████      | 65/159 [11:14<15:44, 10.05s/it]                                                 41%|████      | 65/159 [11:14<15:44, 10.05s/it] 42%|████▏     | 66/159 [11:24<15:44, 10.15s/it] 42%|████▏     | 67/159 [11:35<15:41, 10.23s/it] 43%|████▎     | 68/159 [11:47<16:22, 10.80s/it] 43%|████▎     | 69/159 [11:58<16:24, 10.94s/it] 44%|████▍     | 70/159 [12:09<16:00, 10.79s/it]                                                 44%|████▍     | 70/159 [12:09<16:00, 10.79s/it] 45%|████▍     | 71/159 [12:19<15:31, 10.59s/it] 45%|████▌     | 72/159 [12:29<15:15, 10.52s/it] 46%|████▌     | 73/159 [12:39<15:01, 10.48s/it] 47%|████▋     | 74/159 [12:50<14:48, 10.45s/it] 47%|████▋     | 75/159 [13:00<14:38, 10.46s/it]                                                 47%|████▋     | 75/159 [13:00<14:38, 10.46s/it] 48%|████▊     | 76/159 [13:11<14:25, 10.42s/it] 48%|████▊     | 77/159 [13:21<14:08, 10.35s/it] 49%|████▉     | 78/159 [13:31<13:42, 10.15s/it] 50%|████▉     | 79/159 [13:40<13:15,  9.94s/it] 50%|█████     | 80/159 [13:50<13:17, 10.09s/it]                                                 50%|█████     | 80/159 [13:50<13:17, 10.09s/it] 51%|█████     | 81/159 [14:01<13:16, 10.22s/it] 52%|█████▏    | 82/159 [14:11<13:08, 10.24s/it] 52%|█████▏    | 83/159 [14:22<13:00, 10.27s/it] 53%|█████▎    | 84/159 [14:30<12:12,  9.77s/it] 53%|█████▎    | 85/159 [14:41<12:18,  9.98s/it]                                                 53%|█████▎    | 85/159 [14:41<12:18,  9.98s/it] 54%|█████▍    | 86/159 [14:51<12:15, 10.08s/it] 55%|█████▍    | 87/159 [15:01<12:10, 10.14s/it] 55%|█████▌    | 88/159 [15:11<12:02, 10.18s/it] 56%|█████▌    | 89/159 [15:22<11:53, 10.19s/it] 57%|█████▋    | 90/159 [15:32<11:46, 10.24s/it]                                                 57%|█████▋    | 90/159 [15:32<11:46, 10.24s/it] 57%|█████▋    | 91/159 [15:42<11:38, 10.27s/it] 58%|█████▊    | 92/159 [15:53<11:29, 10.29s/it] 58%|█████▊    | 93/159 [16:03<11:22, 10.34s/it] 59%|█████▉    | 94/159 [16:13<11:10, 10.32s/it] 60%|█████▉    | 95/159 [16:24<10:59, 10.31s/it]                                                 60%|█████▉    | 95/159 [16:24<10:59, 10.31s/it] 60%|██████    | 96/159 [16:34<10:49, 10.30s/it] 61%|██████    | 97/159 [16:44<10:37, 10.28s/it] 62%|██████▏   | 98/159 [16:54<10:09, 10.00s/it] 62%|██████▏   | 99/159 [17:04<10:05, 10.10s/it] 63%|██████▎   | 100/159 [17:14<09:58, 10.14s/it]                                                  63%|██████▎   | 100/159 [17:14<09:58, 10.14s/it] 64%|██████▎   | 101/159 [17:25<10:01, 10.38s/it] 64%|██████▍   | 102/159 [17:35<09:49, 10.34s/it] 65%|██████▍   | 103/159 [17:46<09:37, 10.32s/it] 65%|██████▌   | 104/159 [17:56<09:24, 10.27s/it] 66%|██████▌   | 105/159 [18:06<09:13, 10.25s/it]                                                  66%|██████▌   | 105/159 [18:06<09:13, 10.25s/it] 67%|██████▋   | 106/159 [18:16<08:59, 10.18s/it] 67%|██████▋   | 107/159 [18:26<08:48, 10.17s/it] 68%|██████▊   | 108/159 [18:36<08:38, 10.16s/it] 69%|██████▊   | 109/159 [18:47<08:32, 10.25s/it] 69%|██████▉   | 110/159 [18:58<08:34, 10.50s/it]                                                  69%|██████▉   | 110/159 [18:58<08:34, 10.50s/it] 70%|██████▉   | 111/159 [19:09<08:34, 10.73s/it] 70%|███████   | 112/159 [19:20<08:26, 10.78s/it] 71%|███████   | 113/159 [19:31<08:14, 10.76s/it] 72%|███████▏  | 114/159 [19:41<08:03, 10.75s/it] 72%|███████▏  | 115/159 [19:52<07:50, 10.69s/it]                                                  72%|███████▏  | 115/159 [19:52<07:50, 10.69s/it] 73%|███████▎  | 116/159 [20:02<07:34, 10.57s/it] 74%|███████▎  | 117/159 [20:13<07:25, 10.60s/it] 74%|███████▍  | 118/159 [20:24<07:16, 10.64s/it] 75%|███████▍  | 119/159 [20:34<07:00, 10.52s/it] 75%|███████▌  | 120/159 [20:43<06:36, 10.17s/it]                                                  75%|███████▌  | 120/159 [20:43<06:36, 10.17s/it] 76%|███████▌  | 121/159 [20:54<06:27, 10.20s/it] 77%|███████▋  | 122/159 [21:04<06:18, 10.24s/it] 77%|███████▋  | 123/159 [21:14<06:12, 10.34s/it] 78%|███████▊  | 124/159 [21:25<06:04, 10.42s/it] 79%|███████▊  | 125/159 [21:35<05:53, 10.40s/it]                                                  79%|███████▊  | 125/159 [21:35<05:53, 10.40s/it] 79%|███████▉  | 126/159 [21:46<05:43, 10.40s/it] 80%|███████▉  | 127/159 [21:56<05:32, 10.39s/it] 81%|████████  | 128/159 [22:07<05:21, 10.37s/it] 81%|████████  | 129/159 [22:17<05:11, 10.40s/it] 82%|████████▏ | 130/159 [22:27<04:57, 10.26s/it]                                                  82%|████████▏ | 130/159 [22:27<04:57, 10.26s/it] 82%|████████▏ | 131/159 [22:37<04:49, 10.33s/it] 83%|████████▎ | 132/159 [22:48<04:41, 10.44s/it] 84%|████████▎ | 133/159 [22:59<04:32, 10.48s/it] 84%|████████▍ | 134/159 [23:09<04:22, 10.49s/it] 85%|████████▍ | 135/159 [23:20<04:11, 10.50s/it]                                                  85%|████████▍ | 135/159 [23:20<04:11, 10.50s/it] 86%|████████▌ | 136/159 [23:31<04:04, 10.64s/it] 86%|████████▌ | 137/159 [23:41<03:54, 10.66s/it] 87%|████████▋ | 138/159 [23:52<03:42, 10.61s/it] 87%|████████▋ | 139/159 [24:02<03:32, 10.60s/it] 88%|████████▊ | 140/159 [24:13<03:21, 10.62s/it]                                                  88%|████████▊ | 140/159 [24:13<03:21, 10.62s/it] 89%|████████▊ | 141/159 [24:23<03:04, 10.27s/it] 89%|████████▉ | 142/159 [24:33<02:57, 10.41s/it] 90%|████████▉ | 143/159 [24:43<02:42, 10.18s/it] 91%|█████████ | 144/159 [24:54<02:34, 10.30s/it] 91%|█████████ | 145/159 [25:04<02:24, 10.35s/it]                                                  91%|█████████ | 145/159 [25:04<02:24, 10.35s/it] 92%|█████████▏| 146/159 [25:15<02:15, 10.40s/it] 92%|█████████▏| 147/159 [25:25<02:04, 10.42s/it] 93%|█████████▎| 148/159 [25:36<01:54, 10.45s/it] 94%|█████████▎| 149/159 [25:46<01:43, 10.35s/it] 94%|█████████▍| 150/159 [25:56<01:33, 10.37s/it]                                                  94%|█████████▍| 150/159 [25:56<01:33, 10.37s/it] 95%|█████████▍| 151/159 [26:07<01:25, 10.64s/it] 96%|█████████▌| 152/159 [26:17<01:12, 10.37s/it] 96%|█████████▌| 153/159 [26:27<01:01, 10.32s/it] 97%|█████████▋| 154/159 [26:37<00:51, 10.26s/it] 97%|█████████▋| 155/159 [26:47<00:40, 10.05s/it]                                                  97%|█████████▋| 155/159 [26:47<00:40, 10.05s/it] 98%|█████████▊| 156/159 [26:57<00:30, 10.08s/it] 99%|█████████▊| 157/159 [27:07<00:20, 10.06s/it] 99%|█████████▉| 158/159 [27:16<00:09,  9.70s/it]100%|██████████| 159/159 [27:21<00:00,  8.29s/it]                                                 100%|██████████| 159/159 [27:22<00:00,  8.29s/it]100%|██████████| 159/159 [27:22<00:00, 10.33s/it]
+{'loss': 1.3466, 'grad_norm': 1.0507315397262573, 'learning_rate': 4.8742138364779875e-05, 'epoch': 0.03}
+{'loss': 1.3222, 'grad_norm': 0.8955594301223755, 'learning_rate': 4.716981132075472e-05, 'epoch': 0.06}
+{'loss': 1.421, 'grad_norm': 1.3955707550048828, 'learning_rate': 4.559748427672956e-05, 'epoch': 0.09}
+{'loss': 1.3919, 'grad_norm': 1.04541015625, 'learning_rate': 4.402515723270441e-05, 'epoch': 0.13}
+{'loss': 1.3533, 'grad_norm': 1.1262775659561157, 'learning_rate': 4.245283018867925e-05, 'epoch': 0.16}
+{'loss': 1.3503, 'grad_norm': 0.8574967980384827, 'learning_rate': 4.088050314465409e-05, 'epoch': 0.19}
+{'loss': 1.1821, 'grad_norm': 0.9054722785949707, 'learning_rate': 3.9308176100628936e-05, 'epoch': 0.22}
+{'loss': 1.3573, 'grad_norm': 0.848961353302002, 'learning_rate': 3.7735849056603776e-05, 'epoch': 0.25}
+{'loss': 1.2082, 'grad_norm': 0.8797606825828552, 'learning_rate': 3.6163522012578616e-05, 'epoch': 0.28}
+{'loss': 1.4086, 'grad_norm': 0.8896205425262451, 'learning_rate': 3.4591194968553456e-05, 'epoch': 0.32}
+{'loss': 1.5523, 'grad_norm': 1.131019115447998, 'learning_rate': 3.30188679245283e-05, 'epoch': 0.35}
+{'loss': 1.4267, 'grad_norm': 1.0761773586273193, 'learning_rate': 3.144654088050314e-05, 'epoch': 0.38}
+{'loss': 1.4549, 'grad_norm': 1.0081913471221924, 'learning_rate': 2.9874213836477987e-05, 'epoch': 0.41}
+{'loss': 1.3176, 'grad_norm': 1.3401681184768677, 'learning_rate': 2.830188679245283e-05, 'epoch': 0.44}
+{'loss': 1.3144, 'grad_norm': 0.9577615857124329, 'learning_rate': 2.6729559748427674e-05, 'epoch': 0.47}
+{'loss': 1.3952, 'grad_norm': 1.0382399559020996, 'learning_rate': 2.5157232704402517e-05, 'epoch': 0.5}
+{'loss': 1.2984, 'grad_norm': 0.8688076138496399, 'learning_rate': 2.358490566037736e-05, 'epoch': 0.54}
+{'loss': 1.4295, 'grad_norm': 0.9451486468315125, 'learning_rate': 2.2012578616352204e-05, 'epoch': 0.57}
+{'loss': 1.4981, 'grad_norm': 1.1178196668624878, 'learning_rate': 2.0440251572327044e-05, 'epoch': 0.6}
+{'loss': 1.2931, 'grad_norm': 1.039865493774414, 'learning_rate': 1.8867924528301888e-05, 'epoch': 0.63}
+{'loss': 1.1391, 'grad_norm': 0.9673483371734619, 'learning_rate': 1.7295597484276728e-05, 'epoch': 0.66}
+{'loss': 1.3809, 'grad_norm': 1.5336629152297974, 'learning_rate': 1.572327044025157e-05, 'epoch': 0.69}
+{'loss': 1.4183, 'grad_norm': 0.9744486808776855, 'learning_rate': 1.4150943396226415e-05, 'epoch': 0.73}
+{'loss': 1.4402, 'grad_norm': 1.1794203519821167, 'learning_rate': 1.2578616352201259e-05, 'epoch': 0.76}
+{'loss': 1.2699, 'grad_norm': 0.8888068199157715, 'learning_rate': 1.1006289308176102e-05, 'epoch': 0.79}
+{'loss': 1.3866, 'grad_norm': 0.9911852478981018, 'learning_rate': 9.433962264150944e-06, 'epoch': 0.82}
+{'loss': 1.3201, 'grad_norm': 0.9001652002334595, 'learning_rate': 7.861635220125786e-06, 'epoch': 0.85}
+{'loss': 1.3582, 'grad_norm': 1.2331576347351074, 'learning_rate': 6.289308176100629e-06, 'epoch': 0.88}
+{'loss': 1.3398, 'grad_norm': 0.9701694846153259, 'learning_rate': 4.716981132075472e-06, 'epoch': 0.91}
+{'loss': 1.2923, 'grad_norm': 1.2157331705093384, 'learning_rate': 3.1446540880503146e-06, 'epoch': 0.95}
+{'loss': 1.3611, 'grad_norm': 0.8664301633834839, 'learning_rate': 1.5723270440251573e-06, 'epoch': 0.98}
+{'train_runtime': 1642.0429, 'train_samples_per_second': 0.386, 'train_steps_per_second': 0.097, 'train_loss': 1.3550621098692313, 'epoch': 1.0}
+Updating lock file 'dvc.lock'
+
+Running stage 'evaluate_adapter':
+> .venv/bin/python -m src.pipeline.stage evaluate_adapter -- python -m src.training.evaluate_models --model Qwen/Qwen2.5-0.5B-Instruct --revision 7ae557604adf67be50417f59c2c2f167def9a775 --adapter models/adapters/qwen-v2 --output reports/evaluation/qwen_lora_v2.json
+
+Completing independent EDA and base-evaluation branches.
+Stage 'inspect' didn't change, skipping
+Stage 'ingest' didn't change, skipping
+Running stage 'eda':
+> .venv/bin/python -m src.pipeline.stage eda -- python -m src.data.eda data/raw/numinamath.jsonl
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/positive/aiops/capstone/src/pipeline/stage.py", line 82, in <module>
+    main()
+    ~~~~^^
+  File "/home/positive/aiops/capstone/src/pipeline/stage.py", line 62, in main
+    for key, value in payload.items():
+                      ^^^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'items'
+ERROR: failed to reproduce 'eda': failed to run: .venv/bin/python -m src.pipeline.stage eda -- python -m src.data.eda data/raw/numinamath.jsonl, exited with 1
+
+Completing independent EDA and base-evaluation branches.
+Stage 'inspect' didn't change, skipping
+Stage 'ingest' didn't change, skipping
+Running stage 'eda':
+> .venv/bin/python -m src.pipeline.stage eda -- python -m src.data.eda data/raw/numinamath.jsonl
+Updating lock file 'dvc.lock'
+
+Stage 'clean' didn't change, skipping
+Stage 'split' didn't change, skipping
+Stage 'benchmark' didn't change, skipping
+Stage 'train' didn't change, skipping
+Running stage 'evaluate_base':
+> .venv/bin/python -m src.pipeline.stage evaluate_base -- python -m src.training.evaluate_models --model Qwen/Qwen2.5-0.5B-Instruct --revision 7ae557604adf67be50417f59c2c2f167def9a775 --output reports/evaluation/qwen_base.json
+{"candidate": "base", "model": "Qwen/Qwen2.5-0.5B-Instruct", "revision": "7ae557604adf67be50417f59c2c2f167def9a775", "adapter": null, "test_input_count": 73, "scored": 73, "rejected_fully_truncated": 0, "mean_completion_loss": 1.4871897860749128, "seconds": 86.20283672400001, "seconds_per_scored": 1.180860777041096, "status": "completed"}
+Updating lock file 'dvc.lock'
+
+WARNING: Process '/home/positive/aiops/capstone/.venv/lib/python3.14/site-packages/dvc/__main__.py repro --force inspect register' with (Pid 26837), in RWLock-file 'reports/evaluation/qwen_lora_v2.json' had been killed. Auto removed it from the lock file.
+Running stage 'evaluate_adapter':
+> .venv/bin/python -m src.pipeline.stage evaluate_adapter -- python -m src.training.evaluate_models --model Qwen/Qwen2.5-0.5B-Instruct --revision 7ae557604adf67be50417f59c2c2f167def9a775 --adapter models/adapters/qwen-v2 --output reports/evaluation/qwen_lora_v2.json
+{"candidate": "adapter", "model": "Qwen/Qwen2.5-0.5B-Instruct", "revision": "7ae557604adf67be50417f59c2c2f167def9a775", "adapter": "models/adapters/qwen-v2", "test_input_count": 73, "scored": 73, "rejected_fully_truncated": 0, "mean_completion_loss": 1.350492925676581, "seconds": 92.20745814600014, "seconds_per_scored": 1.2631158650137004, "status": "completed"}
+Updating lock file 'dvc.lock'
+
+Running stage 'acceptance':
+> .venv/bin/python -m src.pipeline.stage acceptance -- python -m src.training.evaluate_generation_benchmark --model Qwen/Qwen2.5-0.5B-Instruct --revision 7ae557604adf67be50417f59c2c2f167def9a775 --adapter models/adapters/qwen-v2 --max-new-tokens 48 --output reports/evaluation/qwen_v2_generation.json
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+{"accuracy": 1.0, "minimum_accuracy": 0.8, "seconds": 4.259181475999867, "status": "accepted"}
+Updating lock file 'dvc.lock'
+
+Running stage 'register':
+> .venv/bin/python -m src.pipeline.stage register -- python -m src.training.register_model --model Qwen/Qwen2.5-0.5B-Instruct --revision 7ae557604adf67be50417f59c2c2f167def9a775 --adapter models/adapters/qwen-v2 --evaluation reports/evaluation/qwen_lora_v2.json --acceptance reports/evaluation/qwen_v2_generation.json --name local-math-assistant-qwen-cpu-v2 --output reports/pipeline/registration.json
+/home/positive/aiops/capstone/.venv/lib/python3.14/site-packages/mlflow/pyfunc/utils/data_validation.py:187: UserWarning: [33mAdd type hints to the `predict` method to enable data validation and automatic signature inference during model logging. Check https://mlflow.org/docs/latest/model/python_model.html#type-hint-usage-in-pythonmodel for more details.[0m
+  color_warning(
+2026/11/18 19:29:54 WARNING mlflow.pyfunc: Passing a Python object as `python_model` causes it to be serialized using CloudPickle, it requires exercising caution as Python object serialization mechanisms may execute arbitrary code during deserialization.Consider using a file path (str or Path) instead. See https://mlflow.org/docs/latest/ml/model/models-from-code/ for details.
+/home/positive/aiops/capstone/.venv/lib/python3.14/site-packages/mlflow/pyfunc/__init__.py:3344: UserWarning: [1;33mAn input example was not provided when logging the model. To ensure the model signature functions correctly, specify the `input_example` parameter. See https://mlflow.org/docs/latest/model/signatures.html#model-input-example for more details about the benefits of using input_example.[0m
+  color_warning(
+Downloading artifacts:   0%|          | 0/43 [00:00<?, ?it/s]Downloading artifacts:   2%|▏         | 1/43 [00:00<00:00, 6898.53it/s]Downloading artifacts:   5%|▍         | 2/43 [00:00<00:00, 6069.90it/s]Downloading artifacts:   7%|▋         | 3/43 [00:00<00:00, 6944.21it/s]Downloading artifacts:   9%|▉         | 4/43 [00:00<00:00, 8244.33it/s]Downloading artifacts:  12%|█▏        | 5/43 [00:00<00:00, 9379.03it/s]Downloading artifacts:  14%|█▍        | 6/43 [00:00<00:00, 10242.50it/s]Downloading artifacts:  16%|█▋        | 7/43 [00:00<00:00, 11041.79it/s]Downloading artifacts:  19%|█▊        | 8/43 [00:00<00:00, 11823.27it/s]Downloading artifacts:  21%|██        | 9/43 [00:00<00:00, 12549.45it/s]Downloading artifacts:  23%|██▎       | 10/43 [00:00<00:00, 13177.20it/s]Downloading artifacts:  26%|██▌       | 11/43 [00:00<00:00, 13706.88it/s]Downloading artifacts:  28%|██▊       | 12/43 [00:00<00:00, 14177.93it/s]Downloading artifacts:  30%|███       | 13/43 [00:00<00:00, 14598.65it/s]Downloading artifacts:  33%|███▎      | 14/43 [00:00<00:00, 14987.30it/s]Downloading artifacts:  35%|███▍      | 15/43 [00:00<00:00, 15315.13it/s]Downloading artifacts:  37%|███▋      | 16/43 [00:00<00:00, 15672.32it/s]Downloading artifacts:  40%|███▉      | 17/43 [00:00<00:00, 15901.69it/s]Downloading artifacts:  42%|████▏     | 18/43 [00:00<00:00, 16194.22it/s]Downloading artifacts:  44%|████▍     | 19/43 [00:00<00:00, 16472.05it/s]Downloading artifacts:  47%|████▋     | 20/43 [00:00<00:00, 16607.82it/s]Downloading artifacts:  49%|████▉     | 21/43 [00:00<00:00, 16662.96it/s]Downloading artifacts:  51%|█████     | 22/43 [00:00<00:00, 16641.06it/s]Downloading artifacts:  53%|█████▎    | 23/43 [00:00<00:00, 16409.08it/s]Downloading artifacts:  56%|█████▌    | 24/43 [00:00<00:00, 15780.42it/s]Downloading artifacts:  58%|█████▊    | 25/43 [00:00<00:00, 15751.48it/s]Downloading artifacts:  60%|██████    | 26/43 [00:00<00:00, 15758.95it/s]Downloading artifacts:  63%|██████▎   | 27/43 [00:00<00:00, 15674.22it/s]Downloading artifacts:  65%|██████▌   | 28/43 [00:00<00:00, 15673.36it/s]Downloading artifacts:  67%|██████▋   | 29/43 [00:00<00:00, 15755.81it/s]Downloading artifacts:  70%|██████▉   | 30/43 [00:00<00:00, 15841.51it/s]Downloading artifacts:  72%|███████▏  | 31/43 [00:00<00:00, 15718.50it/s]Downloading artifacts:  74%|███████▍  | 32/43 [00:00<00:00, 15864.98it/s]Downloading artifacts:  77%|███████▋  | 33/43 [00:00<00:00, 16047.77it/s]Downloading artifacts:  79%|███████▉  | 34/43 [00:00<00:00, 16240.33it/s]Downloading artifacts:  81%|████████▏ | 35/43 [00:00<00:00, 16429.84it/s]Downloading artifacts:  84%|████████▎ | 36/43 [00:00<00:00, 16585.56it/s]Downloading artifacts:  86%|████████▌ | 37/43 [00:00<00:00, 16649.42it/s]Downloading artifacts:  88%|████████▊ | 38/43 [00:00<00:00, 7420.78it/s] Downloading artifacts:  91%|█████████ | 39/43 [00:00<00:00, 6503.83it/s]Downloading artifacts:  93%|█████████▎| 40/43 [00:00<00:00, 6395.22it/s]Downloading artifacts:  95%|█████████▌| 41/43 [00:00<00:00, 4403.64it/s]Downloading artifacts:  98%|█████████▊| 42/43 [00:00<00:00, 3332.47it/s]Downloading artifacts: 100%|██████████| 43/43 [00:00<00:00, 2826.13it/s]Downloading artifacts: 100%|██████████| 43/43 [00:00<00:00, 2776.06it/s]
+{"run_id": "2f4543820155496480b67f7f5ba8fa96", "model_name": "local-math-assistant-qwen-cpu-v2", "version": 2, "model_uri": "models:/m-712c6935369e4c3a877370c859806662", "validation_status": "accepted", "adapter_sha256": "250f394852745ef16ea716c7d0937a5b3ec7864028e79eb5d25d9bd4999d9267", "cases": 5, "accuracy": 1.0, "minimum_accuracy": 0.8, "accepted": true}
+Updating lock file 'dvc.lock'
+
+To track the changes with git, run:
+
+	git add dvc.lock reports/pipeline/.gitignore
+
+To enable auto staging, run:
+
+	dvc config core.autostage true
+Use `dvc push` to send your updates to remote storage.
+
+Serving-format refinement: rechecked all five generation cases; registered the same verified adapter with the shared requested-format contract and length-limit feedback.
+{"run_id": "63907d6bd0e949be80c5bd4cf472fcb9", "model_name": "local-math-assistant-qwen-cpu-v2", "version": 3, "model_uri": "models:/m-45811d9a069a48b19359f3eb1dbd69e5", "validation_status": "accepted", "adapter_sha256": "250f394852745ef16ea716c7d0937a5b3ec7864028e79eb5d25d9bd4999d9267", "cases": 5, "accuracy": 1.0, "minimum_accuracy": 0.8, "accepted": true}

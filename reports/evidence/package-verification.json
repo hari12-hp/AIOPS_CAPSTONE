@@ -1,0 +1,42 @@
+{
+  "manifest_files_verified": 292,
+  "zip_crc_verified": true,
+  "checks": [
+    {
+      "command": [
+        "/home/positive/aiops/capstone/.venv/bin/dvc",
+        "pull"
+      ],
+      "passed": true,
+      "output": "A       artifacts/input/pilot-v1/\nA       data/cleaned/records/\nA       data/splits/\nA       models/adapters/gemma-v2/\nA       models/adapters/qwen-v2/\nA       data/raw/numinamath.jsonl\nA       reports/eda/ingestion.json\nA       reports/eda/quality.json\nA       reports/eda/report.json\nA       reports/eda/sample_review.json\nA       reports/eda/splits.json\nA       reports/evaluation/gemma_base.json\nA       reports/evaluation/gemma_pilot_v1.json\nA       reports/evaluation/gemma_v2.json\nA       reports/evaluation/gemma_v2_generation.json\nA       reports/evaluation/qwen_base.json\nA       reports/evaluation/qwen_lora_v2.json\nA       reports/evaluation/qwen_v2_generation.json\nA       reports/pipeline/benchmark.json\nA       reports/pipeline/registration.json\nA       reports/runtime/environment.json\n85 files fetched and 108 files added\n"
+    },
+    {
+      "command": [
+        "/home/positive/aiops/capstone/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "passed": true,
+      "output": ".....................................                                    [100%]\n37 passed in 0.32s\n"
+    },
+    {
+      "command": [
+        "/home/positive/aiops/capstone/.venv/bin/dvc",
+        "status"
+      ],
+      "passed": true,
+      "output": "Data and pipelines are up to date.\n"
+    },
+    {
+      "command": [
+        "bash",
+        "scripts/restore_registry.sh"
+      ],
+      "passed": true,
+      "output": "{\"run_id\": \"e7593cafc8ae4cd88d70a3a46a11c073\", \"model_name\": \"local-math-assistant-qwen-cpu-v2\", \"version\": 1, \"model_uri\": \"models:/m-1530731fcdbf46b3828dff7b9f4ceac6\", \"validation_status\": \"accepted\", \"adapter_sha256\": \"250f394852745ef16ea716c7d0937a5b3ec7864028e79eb5d25d9bd4999d9267\", \"cases\": 5, \"accuracy\": 1.0, \"minimum_accuracy\": 0.8, \"accepted\": true}\n0:00, 25146.96it/s]\nDownloading artifacts:  58%|\u2588\u2588\u2588\u2588\u2588\u258a    | 25/43 [00:00<00:00, 25230.41it/s]\nDownloading artifacts:  60%|\u2588\u2588\u2588\u2588\u2588\u2588    | 26/43 [00:00<00:00, 25313.81it/s]\nDownloading artifacts:  63%|\u2588\u2588\u2588\u2588\u2588\u2588\u258e   | 27/43 [00:00<00:00, 25312.07it/s]\nDownloading artifacts:  65%|\u2588\u2588\u2588\u2588\u2588\u2588\u258c   | 28/43 [00:00<00:00, 25359.64it/s]\nDownloading artifacts:  67%|\u2588\u2588\u2588\u2588\u2588\u2588\u258b   | 29/43 [00:00<00:00, 25451.94it/s]\nDownloading artifacts:  70%|\u2588\u2588\u2588\u2588\u2588\u2588\u2589   | 30/43 [00:00<00:00, 25538.69it/s]\nDownloading artifacts:  72%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258f  | 31/43 [00:00<00:00, 25640.59it/s]\nDownloading artifacts:  74%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258d  | 32/43 [00:00<00:00, 25746.73it/s]\nDownloading artifacts:  77%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258b  | 33/43 [00:00<00:00, 25847.25it/s]\nDownloading artifacts:  79%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2589  | 34/43 [00:00<00:00, 25937.86it/s]\nDownloading artifacts:  81%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258f | 35/43 [00:00<00:00, 26033.10it/s]\nDownloading artifacts:  84%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258e | 36/43 [00:00<00:00, 26110.14it/s]\nDownloading artifacts:  86%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258c | 37/43 [00:00<00:00, 26187.86it/s]\nDownloading artifacts:  88%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258a | 38/43 [00:00<00:00, 26214.40it/s]\nDownloading artifacts:  91%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 | 39/43 [00:00<00:00, 26239.63it/s]\nDownloading artifacts:  93%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258e| 40/43 [00:00<00:00, 25198.58it/s]\nDownloading artifacts:  95%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258c| 41/43 [00:00<00:00, 24883.01it/s]\nDownloading artifacts:  98%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u258a| 42/43 [00:00<00:00, 24762.55it/s]\nDownloading artifacts: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 43/43 [00:00<00:00, 24750.25it/s]\nDownloading artifacts: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 43/43 [00:00<00:00, 23910.26it/s]\n"
+    }
+  ],
+  "portable_registry_verified": true,
+  "passed": true
+}

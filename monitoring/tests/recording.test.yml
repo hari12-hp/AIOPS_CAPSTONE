@@ -1,0 +1,34 @@
+rule_files:
+- /etc/prometheus/recording_rules.yml
+evaluation_interval: 15s
+tests:
+- name: 'Recording separates 4xx and 5xx: 1'
+  interval: 15s
+  input_series:
+  - series: math_assistant_http_responses_total{endpoint="/v1/solve",status_class="2xx"}
+    values: 0+9x40
+  - series: math_assistant_http_responses_total{endpoint="/v1/solve",status_class="4xx"}
+    values: 0+0x40
+  - series: math_assistant_http_responses_total{endpoint="/v1/solve",status_class="5xx"}
+    values: 0+1x40
+  promql_expr_test:
+  - expr: math:solve_server_error_ratio:rate5m
+    eval_time: 5m
+    exp_samples:
+    - labels: '{__name__="math:solve_server_error_ratio:rate5m"}'
+      value: 0.1
+- name: 'Recording separates 4xx and 5xx: 0'
+  interval: 15s
+  input_series:
+  - series: math_assistant_http_responses_total{endpoint="/v1/solve",status_class="2xx"}
+    values: 0+9x40
+  - series: math_assistant_http_responses_total{endpoint="/v1/solve",status_class="4xx"}
+    values: 0+1x40
+  - series: math_assistant_http_responses_total{endpoint="/v1/solve",status_class="5xx"}
+    values: 0+0x40
+  promql_expr_test:
+  - expr: math:solve_server_error_ratio:rate5m
+    eval_time: 5m
+    exp_samples:
+    - labels: '{__name__="math:solve_server_error_ratio:rate5m"}'
+      value: 0

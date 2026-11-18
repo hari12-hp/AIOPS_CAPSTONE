@@ -6,6 +6,7 @@ __pycache__/
 .mypy_cache/
 .env
 .env.*
+!.env.example
 .hf-cache/
 data/raw/
 data/cleaned/
@@ -23,3 +24,17 @@ metastore_db/
 checkpoints/
 reports/runtime/*.json
 !reports/runtime/.gitkeep
+
+# Local artifacts, packaging, and operator configuration
+.dvc/cache-store/
+output/
+reports/runtime/*.log
+reports/runtime/*.lock
+reports/runtime/*.tar.gz
+reports/runtime/stages/
+*.db-shm
+*.db-wal
+.ruff_cache/
+.aws/
+.agents/
+.codex/

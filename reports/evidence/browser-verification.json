@@ -1,0 +1,53 @@
+{
+  "executed_at": 1795011237.930087,
+  "checks": [
+    {
+      "name": "Empty question validation",
+      "passed": true,
+      "observation": "Client displays Enter a mathematics question first and focuses the editor."
+    },
+    {
+      "name": "Examples and character count",
+      "passed": true,
+      "observation": "Algebra and fraction examples fill the editor and update its character count."
+    },
+    {
+      "name": "Keyboard shortcut and progress",
+      "passed": true,
+      "observation": "Control+Enter submits one request; the button is disabled and progress text appears."
+    },
+    {
+      "name": "Real model answer and equation rendering",
+      "passed": true,
+      "observation": "The final fraction example returns 7/8 in about 1.1 seconds and renders one KaTeX equation."
+    },
+    {
+      "name": "Copy interaction",
+      "passed": true,
+      "observation": "The copy operation resolves and the button shows Copied; the source code copies the original answer string."
+    },
+    {
+      "name": "Mobile workspace",
+      "passed": true,
+      "observation": "At a measured 390px viewport the main content is 343px and document scroll width is 375px; no horizontal overflow."
+    },
+    {
+      "name": "In-app guide",
+      "passed": true,
+      "observation": "Guide includes question entry, answers, copying, recovery, pipeline and privacy sections."
+    },
+    {
+      "name": "Pipeline console",
+      "passed": true,
+      "observation": "All eleven stages display completed; actual counts, timings, accepted version 3 and run links are visible."
+    },
+    {
+      "name": "Browser JavaScript errors",
+      "passed": true,
+      "observation": "No browser error logs were returned for the final workspace."
+    }
+  ],
+  "passed": 9,
+  "failed": 0,
+  "clipboard_note": "The automation clipboard reader did not independently expose the native clipboard; copy success is verified by the resolved browser operation and visible UI state."
+}

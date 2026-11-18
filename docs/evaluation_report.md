@@ -1,36 +1,40 @@
 # Evaluation and Training Evidence
 
-## Protocol
+## Fresh selected-model experiment
 
-All five candidates below were scored sequentially on the same deterministic held-out split of 73 rows. The score is mean response-completion cross-entropy after the shared system-and-user prompt; lower is better. Evaluation used CPU `float32`, maximum sequence length 256, and no sampling. This protocol supports a like-for-like language-model comparison, but it is **not** a claim of mathematical-answer correctness.
+The current run uses Qwen/Qwen2.5-0.5B-Instruct at revision `7ae557604adf67be50417f59c2c2f167def9a775`. The source dataset is AI-MO/NuminaMath-1.5 at revision `1b05109f9e5c1ad06c0663519502416c30b300f8`. The bounded ingest writes 800 records; Spark retains 799. Question-level deduplication leaves 798 split rows: 642 train, 83 validation and 73 test. The validation partition is reserved.
 
-## Results
+Training uses rank 8, alpha 16, dropout 0.05, q/k/v/o attention projections, float32 CPU execution, microbatch 1, gradient accumulation 4, sequence length 256, learning rate 0.00005 and seed 42. 634 examples have visible completion labels; 8 fully truncated completions are excluded. The adapter has 1,081,344 trainable parameters. One epoch took 1642.0 seconds.
 
-| Candidate | Base revision | Adapter | Held-out completion loss | Eval time |
-|---|---|---|---:|---:|
-| Gemma 3 1B base | `dcc83ea841ab6100d6b47a070329e1ba4cf78752` | none | 2.7882 | 152.0 s |
-| Gemma Pilot V1 | same | supplied Pilot V1 | 1.9765 | 150.8 s |
-| Gemma CPU V2 | same | rank 8 CPU LoRA | **1.6628** | 144.9 s |
-| Qwen 2.5 0.5B base | recorded in DVC report | none | 1.4872 | 66.1 s |
-| Qwen CPU V2 | same | rank 8 CPU LoRA | **1.3497** | 68.2 s |
+| Candidate | Held-out rows scored | Mean completion cross-entropy | Evaluation duration |
+|---|---:|---:|---:|
+| Qwen base | 73 | 1.4872 | 86.2 s |
+| Fresh Qwen LoRA | 73 | 1.3505 | 92.2 s |
 
-Gemma CPU V2 improves over the supplied Pilot V1 by 0.3137 loss points (15.9%) and over Gemma base by 1.1254 points (40.4%) on this held-out protocol. The source JSON evidence is DVC-tracked in `reports/evaluation/`.
+The adapter lowers held-out completion loss by 9.2%. This measures fit to reference completions and does not itself establish correct mathematics. Both models are evaluated sequentially on the same deterministic test split with prompt labels masked and a maximum length of 256.
 
-## Independent generated-answer acceptance
+## Generated-answer smoke acceptance
 
-To avoid treating loss as correctness, `configs/generation_benchmark.json` fixes five simple algebra, arithmetic, fraction, geometry and percentage prompts before inference. The evaluator uses deterministic greedy CPU generation, saves every raw answer, and applies predeclared answer patterns with an acceptance threshold of 80%.
+`configs/generation_benchmark.json` contains five predeclared prompts spanning algebra, arithmetic, fractions, geometry and percentages. Greedy CPU generation saves every raw completion and tests the declared answer patterns. The verifier recomputes every decision and rejects inconsistent accuracy, statuses, duplicated cases and invalid thresholds.
 
-| Candidate | Resolved base revision | Correct / total | Accuracy | Decision |
-|---|---|---:|---:|---|
-| Qwen CPU V2 | `7ae557604adf67be50417f59c2c2f167def9a775` | 5 / 5 | **100%** | accepted |
-| Gemma CPU V2 | `dcc83ea841ab6100d6b47a070329e1ba4cf78752` | 2 / 5 | 40% | needs review |
+The fresh model achieved **5/5 (100%)**, against a threshold of 80%, in 3.70 seconds. This is deliberately a small functionality test and must not be presented as general mathematics accuracy. Pattern matching can accept an answer containing the expected value; broader exact-answer and reasoning evaluation remains future work.
 
-The Qwen V2 report also measured 3.54 seconds for all five greedy generations. This is a deliberately small smoke/acceptance suite, not evidence of broad mathematical competence; its value is that the raw completions, rubric, threshold and decision are reproducible and auditable.
+| Case | Passed | Raw generated answer |
+|---|---|---|
+| ALG-01 | True | $x = 4$ |
+| ARITH-01 | True | 56 |
+| FRAC-01 | True | $\frac{7}{8}$ |
+| GEOM-01 | True | $36$ |
+| PCT-01 | True | 30 |
 
-## Resource evidence
+## Resource, lineage and deployment evidence
 
-The rerun three-step Gemma benchmark measured 4.655 seconds per microstep and 5.89 GiB RSS (`reports/runtime/gemma_benchmark.json`). The reproducible benchmark command enforces an 8 GiB process-RSS threshold before full training. The completed V2 run accepted 635 examples, rejected 7 fully completion-truncated rows, used batch size 1 with gradient accumulation 4, and completed 159 optimizer steps.
+The three-step CPU preflight measured 2.109 seconds/microstep and 3.51 GiB process RSS, below the declared six-GiB benchmark gate. This is the benchmark's observed RSS, not a claimed peak for the entire training epoch. Spark cleaning measured 75.4 records/second including its measured transformation/write work.
 
-## Traceability and decision
+The completed pipeline parent run is `32e0318271474a03b44ccfd0e98f759c`. Every stage records its own run ID, duration, command, Git commit/dirty state and output hashes. Training-step loss is logged live. A source snapshot and dependency freeze preserve the uncommitted training context; the final submission manifest identifies the delivered source. No new Git commit was made.
 
-The Gemma V2 registration is `local-math-assistant-gemma-cpu-v2`, version 1, MLflow run `0280baa2c7244260bf5be5c6da54f529`, and remains `needs_review`. The Qwen V2 registration is `local-math-assistant-qwen-cpu-v2`, version 1, MLflow run `0efa44a00cc94484a5df37edbc044361`; its model-version tag is updated to `accepted` only after the stored Qwen generation report clears the predeclared threshold. This preserves an evidence-based deployment decision while retaining Gemma's negative result.
+Registry `local-math-assistant-qwen-cpu-v2` version 3 is tagged `accepted`. The selected adapter SHA-256 is `250f394852745ef16ea716c7d0937a5b3ec7864028e79eb5d25d9bd4999d9267`. Registration checks that the persisted generation report names that exact adapter and base revision before moving `champion`. MLflow Models Serve loads that executable registry artifact, and the live runtime checks exercise the actual web inference path.
+
+## Historical comparison
+
+Earlier DVC evidence retains Gemma base (loss 2.7882), supplied Pilot V1 (1.9765), and Gemma CPU V2 (1.6628). Historical Gemma V2 achieved 2/5 on the five-case generation suite and remains a rejected comparison. The Pilot V1 manifest and original training provenance were not supplied. These earlier metrics are not described as freshly retrained results. The deployed and freshly rebuilt candidate is Qwen.

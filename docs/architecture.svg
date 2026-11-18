@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="490" height="390" preserveAspectRatio="xMinYMin meet" viewBox="0 0 490 390" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="490" height="390"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-390)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="310" width="138" height="49" rx="6" ry="0" style="stroke: rgb(72%,80%,74%); stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,91%); fill-rule: evenodd;"/>
+			<text x="33.445" y="339" style="font-family: Helvetica-Bold; font-size: 10px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,678) scale(1,-1)">Nginx frontend</text>
+			<text x="23.871000000000002" y="323" style="font-family: Helvetica; font-size: 7px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,646) scale(1,-1)">Workspace / Pipeline / Guide</text>
+			<rect x="176" y="310" width="138" height="49" rx="6" ry="0" style="stroke: rgb(72%,80%,74%); stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,91%); fill-rule: evenodd;"/>
+			<text x="226.385" y="339" style="font-family: Helvetica-Bold; font-size: 10px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,678) scale(1,-1)">FastAPI</text>
+			<text x="193.2595" y="323" style="font-family: Helvetica; font-size: 7px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,646) scale(1,-1)">Validated REST / request metrics</text>
+			<rect x="352" y="310" width="138" height="49" rx="6" ry="0" style="stroke: rgb(72%,80%,74%); stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,91%); fill-rule: evenodd;"/>
+			<text x="370.155" y="339" style="font-family: Helvetica-Bold; font-size: 10px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,678) scale(1,-1)">MLflow Models Serve</text>
+			<text x="372.266" y="323" style="font-family: Helvetica; font-size: 7px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,646) scale(1,-1)">Pinned base + registered LoRA</text>
+			<path d="M 138,335 L 176,335 Z" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1.3;"/>
+			<polygon points="176 335, 171 338, 171 332" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1; fill: rgb(15%,44%,32%); fill-rule: evenodd;"/>
+			<path d="M 314,335 L 352,335 Z" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1.3;"/>
+			<polygon points="352 335, 347 338, 347 332" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1; fill: rgb(15%,44%,32%); fill-rule: evenodd;"/>
+			<rect x="0" y="205" width="138" height="49" rx="6" ry="0" style="stroke: rgb(72%,80%,74%); stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,91%); fill-rule: evenodd;"/>
+			<text x="38.16" y="234" style="font-family: Helvetica-Bold; font-size: 10px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,468) scale(1,-1)">DVC pipeline</text>
+			<text x="19.975500000000004" y="218" style="font-family: Helvetica; font-size: 7px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,436) scale(1,-1)">Ingest / Spark / Train / Evaluate</text>
+			<rect x="176" y="205" width="138" height="49" rx="6" ry="0" style="stroke: rgb(72%,80%,74%); stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,91%); fill-rule: evenodd;"/>
+			<text x="206.94" y="234" style="font-family: Helvetica-Bold; font-size: 10px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,468) scale(1,-1)">MLflow tracking</text>
+			<text x="196.567" y="218" style="font-family: Helvetica; font-size: 7px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,436) scale(1,-1)">Nested runs / artifacts / registry</text>
+			<rect x="352" y="205" width="138" height="49" rx="6" ry="0" style="stroke: rgb(72%,80%,74%); stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,91%); fill-rule: evenodd;"/>
+			<text x="386.825" y="234" style="font-family: Helvetica-Bold; font-size: 10px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,468) scale(1,-1)">Model registry</text>
+			<text x="384.8205" y="218" style="font-family: Helvetica; font-size: 7px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,436) scale(1,-1)">Verified champion alias</text>
+			<path d="M 138,230 L 176,230 Z" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1.3;"/>
+			<polygon points="176 230, 171 233, 171 227" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1; fill: rgb(15%,44%,32%); fill-rule: evenodd;"/>
+			<path d="M 314,230 L 352,230 Z" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1.3;"/>
+			<polygon points="352 230, 347 233, 347 227" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1; fill: rgb(15%,44%,32%); fill-rule: evenodd;"/>
+			<path d="M 421,254 L 421,310 Z" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1.3;"/>
+			<rect x="0" y="100" width="138" height="49" rx="6" ry="0" style="stroke: rgb(72%,80%,74%); stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,91%); fill-rule: evenodd;"/>
+			<text x="40.105000000000004" y="129" style="font-family: Helvetica-Bold; font-size: 10px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,258) scale(1,-1)">Prometheus</text>
+			<text x="17.066999999999993" y="113" style="font-family: Helvetica; font-size: 7px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,226) scale(1,-1)">Metrics / recording and alert rules</text>
+			<rect x="176" y="100" width="138" height="49" rx="6" ry="0" style="stroke: rgb(72%,80%,74%); stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,91%); fill-rule: evenodd;"/>
+			<text x="226.105" y="129" style="font-family: Helvetica-Bold; font-size: 10px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,258) scale(1,-1)">Grafana</text>
+			<text x="195.2055" y="113" style="font-family: Helvetica; font-size: 7px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,226) scale(1,-1)">Operations / alerts / ML lifecycle</text>
+			<rect x="352" y="100" width="138" height="49" rx="6" ry="0" style="stroke: rgb(72%,80%,74%); stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,91%); fill-rule: evenodd;"/>
+			<text x="380.71" y="129" style="font-family: Helvetica-Bold; font-size: 10px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,258) scale(1,-1)">Blackbox probes</text>
+			<text x="374.9015" y="113" style="font-family: Helvetica; font-size: 7px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,226) scale(1,-1)">Eight HTTP readiness checks</text>
+			<path d="M 138,125 L 176,125 Z" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1.3;"/>
+			<polygon points="176 125, 171 128, 171 122" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1; fill: rgb(15%,44%,32%); fill-rule: evenodd;"/>
+			<path d="M 421,149 L 421,180 Z" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1.3;"/>
+			<path d="M 421,180 L 69,180 Z" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1.3;"/>
+			<path d="M 69,180 L 69,149 Z" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1.3;"/>
+			<polygon points="69 149, 66 154, 72 154" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1; fill: rgb(15%,44%,32%); fill-rule: evenodd;"/>
+			<rect x="88" y="10" width="138" height="49" rx="6" ry="0" style="stroke: rgb(72%,80%,74%); stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,91%); fill-rule: evenodd;"/>
+			<text x="124.77000000000001" y="39" style="font-family: Helvetica-Bold; font-size: 10px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,78) scale(1,-1)">Alertmanager</text>
+			<text x="110.3135" y="23" style="font-family: Helvetica; font-size: 7px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,46) scale(1,-1)">Grouping / inhibition / silences</text>
+			<rect x="264" y="10" width="138" height="49" rx="6" ry="0" style="stroke: rgb(72%,80%,74%); stroke-linecap: butt; stroke-width: 1; fill: rgb(93%,95%,91%); fill-rule: evenodd;"/>
+			<text x="293.265" y="39" style="font-family: Helvetica-Bold; font-size: 10px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,78) scale(1,-1)">Local alert inbox</text>
+			<text x="284.763" y="23" style="font-family: Helvetica; font-size: 7px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,46) scale(1,-1)">Durable firing / resolved history</text>
+			<path d="M 69,100 L 69,75 Z" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1.3;"/>
+			<path d="M 69,75 L 157,75 Z" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1.3;"/>
+			<path d="M 157,75 L 157,59 Z" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1.3;"/>
+			<polygon points="157 59, 154 64, 160 64" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1; fill: rgb(15%,44%,32%); fill-rule: evenodd;"/>
+			<path d="M 226,35 L 264,35 Z" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1.3;"/>
+			<polygon points="264 35, 259 38, 259 32" style="stroke: rgb(15%,44%,32%); stroke-linecap: butt; stroke-width: 1; fill: rgb(15%,44%,32%); fill-rule: evenodd;"/>
+			<text x="136.232" y="380" style="font-family: Times-Roman; font-size: 8px;fill: rgb(12%,22%,18%); stroke:none;" transform="translate(0,760) scale(1,-1)">Local files and SQLite; nine Compose services; loopback host ports</text>
+		</g>
+	</g>
+</svg>

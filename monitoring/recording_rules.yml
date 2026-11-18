@@ -1,0 +1,16 @@
+groups:
+  - name: math-studio.service-indicators
+    interval: 15s
+    rules:
+      - record: math:solve_requests:rate5m
+        expr: sum(rate(math_assistant_http_responses_total{endpoint="/v1/solve"}[5m]))
+      - record: math:solve_server_errors:rate5m
+        expr: sum(rate(math_assistant_http_responses_total{endpoint="/v1/solve",status_class="5xx"}[5m]))
+      - record: math:solve_server_error_ratio:rate5m
+        expr: math:solve_server_errors:rate5m / clamp_min(math:solve_requests:rate5m, 1e-9)
+      - record: math:solve_requests:increase10m
+        expr: sum(increase(math_assistant_http_responses_total{endpoint="/v1/solve"}[10m]))
+      - record: math:solve_latency_seconds:p95_5m
+        expr: histogram_quantile(0.95, sum by (le) (rate(math_assistant_request_seconds_bucket{endpoint="/v1/solve"}[5m])))
+      - record: math:probe_availability:ratio24h
+        expr: avg_over_time(probe_success{job="http-probes"}[24h])

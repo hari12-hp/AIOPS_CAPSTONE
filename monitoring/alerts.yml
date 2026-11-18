@@ -1,0 +1,144 @@
+groups:
+  - name: math-studio.availability
+    rules:
+      - alert: MathTargetUnavailable
+        expr: up{job!="http-probes"} == 0
+        for: 1m
+        labels: {severity: critical, team: ml-platform}
+        annotations:
+          summary: '{{ $labels.job }} metrics target is unavailable'
+          description: 'Prometheus cannot scrape {{ $labels.instance }} for one minute. Check the container, network and exporter before restarting it.'
+          runbook_url: http://localhost:19199/runbook#availability
+      - alert: MathEndpointUnavailable
+        expr: probe_success{job="http-probes"} == 0
+        for: 1m
+        labels: {severity: critical, team: ml-platform}
+        annotations:
+          summary: '{{ $labels.service }} HTTP endpoint is failing'
+          description: 'The HTTP probe has failed for one minute. Exporter health alone does not guarantee application readiness.'
+          runbook_url: http://localhost:19199/runbook#availability
+      - alert: MathProbeInventoryMissing
+        expr: count(probe_success{job="http-probes"}) < 8 or absent(probe_success{job="http-probes"})
+        for: 2m
+        labels: {severity: warning, component: monitoring, team: ml-platform}
+        annotations:
+          summary: Expected HTTP probe inventory is missing
+          description: Eight local endpoint probes should be present. Check blackbox and Prometheus target configuration.
+          runbook_url: http://localhost:19199/runbook#availability
+  - name: math-studio.service-quality
+    rules:
+      - alert: MathSolveErrorsHigh
+        expr: math:solve_server_error_ratio:rate5m > 0.05 and math:solve_requests:increase10m >= 5
+        for: 2m
+        labels: {severity: warning, component: api, team: ml-platform}
+        annotations:
+          summary: More than 5% of solve requests return server errors
+          description: 'Sustained for two minutes with at least five requests in ten minutes. HTTP 4xx validation failures are excluded. Inspect backend and model-serving logs.'
+          runbook_url: http://localhost:19199/runbook#errors-and-latency
+      - alert: MathSolveErrorsCritical
+        expr: math:solve_server_error_ratio:rate5m > 0.20 and math:solve_requests:increase10m >= 10
+        for: 2m
+        labels: {severity: critical, component: api, team: ml-platform}
+        annotations:
+          summary: More than 20% of solve requests return server errors
+          description: 'At least ten requests in ten minutes; server error ratio remains above 20% for two minutes. Check model health and capacity.'
+          runbook_url: http://localhost:19199/runbook#errors-and-latency
+      - alert: MathSolveLatencyHigh
+        expr: math:solve_latency_seconds:p95_5m > 30 and math:solve_requests:increase10m >= 10
+        for: 5m
+        labels: {severity: warning, component: api, team: ml-platform}
+        annotations:
+          summary: Solve p95 latency exceeds 30 seconds
+          description: 'CPU deployment threshold, sustained five minutes with at least ten requests in ten minutes. Check concurrent requests, answer length and memory.'
+          runbook_url: http://localhost:19199/runbook#errors-and-latency
+      - alert: MathSolveQueuePressure
+        expr: math_assistant_inflight_requests{endpoint="/v1/solve"} > 4
+        for: 5m
+        labels: {severity: warning, component: api, team: ml-platform}
+        annotations:
+          summary: More than four solve requests are in flight
+          description: 'Inference is serialized. Five minutes of queue pressure warrants reducing load or scaling inference after measuring capacity.'
+          runbook_url: http://localhost:19199/runbook#capacity
+      - alert: MathModelMemoryHigh
+        expr: process_resident_memory_bytes{job="math-model"} > 5905580032
+        for: 5m
+        labels: {severity: warning, team: ml-platform}
+        annotations:
+          summary: Model process memory exceeds 5.5 GiB
+          description: 'Inspect model-serving RSS and host capacity. This is a process-memory threshold, not a container memory limit.'
+          runbook_url: http://localhost:19199/runbook#capacity
+  - name: math-studio.ml-lifecycle
+    rules:
+      - alert: MathPipelineFailed
+        expr: math_pipeline_stage_success == 0
+        for: 30s
+        labels: {severity: warning, component: pipeline, team: ml-platform}
+        annotations:
+          summary: 'Pipeline stage {{ $labels.stage }} failed'
+          description: Check the pipeline console and reports/runtime/pipeline.log. Preserve the failed MLflow run before retrying.
+          runbook_url: http://localhost:19199/runbook#pipeline-and-model-quality
+      - alert: MathPipelineRunFailed
+        expr: math_pipeline_run_success == 0
+        for: 30s
+        labels: {severity: warning, component: pipeline, team: ml-platform}
+        annotations:
+          summary: The pipeline orchestrator failed
+          description: The parent run failed or was interrupted. Check its log even if the last recorded individual stage succeeded.
+          runbook_url: http://localhost:19199/runbook#pipeline-and-model-quality
+      - alert: MathTrainingStalled
+        expr: math_pipeline_stage_running_seconds{stage="train"} > 7200
+        for: 5m
+        labels: {severity: warning, component: pipeline, team: ml-platform}
+        annotations:
+          summary: CPU training has run for more than two hours
+          description: Inspect progress, CPU and memory. The demonstration epoch normally takes about 25–30 minutes; slower hardware may need a revised threshold.
+          runbook_url: http://localhost:19199/runbook#pipeline-and-model-quality
+      - alert: MathGenerationGateFailed
+        expr: math_generation_accuracy < 0.8
+        for: 1m
+        labels: {severity: critical, component: model-quality, team: ml-platform}
+        annotations:
+          summary: The five-case generation acceptance gate failed
+          description: Do not promote the candidate. Inspect raw answers and the declared acceptance patterns; this smoke score is not broad mathematical accuracy.
+          runbook_url: http://localhost:19199/runbook#pipeline-and-model-quality
+  - name: math-studio.monitoring-integrity
+    rules:
+      - alert: MathPrometheusConfigReloadFailed
+        expr: prometheus_config_last_reload_successful == 0
+        for: 1m
+        labels: {severity: warning, component: monitoring, team: ml-platform}
+        annotations:
+          summary: Prometheus rejected its last configuration reload
+          description: Run promtool check config and check rules before reloading. The previous valid configuration may still be active.
+          runbook_url: http://localhost:19199/runbook#monitoring-integrity
+      - alert: MathAlertDeliveryFailing
+        expr: sum(increase(alertmanager_notifications_failed_total[10m])) > 0
+        for: 1m
+        labels: {severity: critical, component: alerting, team: ml-platform}
+        annotations:
+          summary: Alertmanager failed to deliver notifications
+          description: Inspect Alertmanager and alert-receiver logs. The local inbox must be writable and reachable.
+          runbook_url: http://localhost:19199/runbook#monitoring-integrity
+      - alert: MathAlertHeartbeatMissing
+        expr: math_alert_receiver_heartbeat_age_seconds > 180
+        for: 1m
+        labels: {severity: warning, component: alerting, team: ml-platform}
+        annotations:
+          summary: No alert delivery heartbeat for three minutes
+          description: Verify the entire Prometheus → Alertmanager → inbox route. Heartbeats should arrive approximately every minute.
+          runbook_url: http://localhost:19199/runbook#monitoring-integrity
+      - alert: Watchdog
+        expr: vector(1)
+        labels: {severity: info, component: alerting, team: ml-platform}
+        annotations:
+          summary: Alert delivery heartbeat
+          description: Always firing by design; routed separately and excluded from incident counts.
+          runbook_url: http://localhost:19199/runbook#monitoring-integrity
+      - alert: AlertDeliveryDrill
+        expr: math_alert_delivery_drill == 1
+        for: 15s
+        labels: {severity: info, component: alerting, team: ml-platform}
+        annotations:
+          summary: Controlled local alert delivery drill
+          description: A temporary synthetic signal tests evaluation, routing and recovery without stopping an application service.
+          runbook_url: http://localhost:19199/runbook#delivery-drill

@@ -1,0 +1,60 @@
+{
+  "protocol": "predeclared exact-answer regex acceptance; deterministic greedy CPU generation",
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "requested_revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+  "resolved_revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+  "adapter": "models/adapters/qwen-v2",
+  "adapter_sha256": "250f394852745ef16ea716c7d0937a5b3ec7864028e79eb5d25d9bd4999d9267",
+  "cases": [
+    {
+      "id": "ALG-01",
+      "question": "Solve 2x + 3 = 11 for x. Give only the final value.",
+      "accepted_patterns": [
+        "(?<![0-9.])4(?![0-9.])"
+      ],
+      "answer": "$x = 4$",
+      "passed": true
+    },
+    {
+      "id": "ARITH-01",
+      "question": "Compute 7 multiplied by 8. Give only the final value.",
+      "accepted_patterns": [
+        "(?<![0-9.])56(?![0-9.])"
+      ],
+      "answer": "56",
+      "passed": true
+    },
+    {
+      "id": "FRAC-01",
+      "question": "What is 3/4 plus 1/8? Give only the simplified fraction.",
+      "accepted_patterns": [
+        "7\\s*/\\s*8",
+        "\\\\frac\\{7\\}\\{8\\}"
+      ],
+      "answer": "$\\frac{7}{8}$",
+      "passed": true
+    },
+    {
+      "id": "GEOM-01",
+      "question": "What is the area of a rectangle with length 9 and width 4? Give only the final value.",
+      "accepted_patterns": [
+        "(?<![0-9.])36(?![0-9.])"
+      ],
+      "answer": "$36$",
+      "passed": true
+    },
+    {
+      "id": "PCT-01",
+      "question": "What is 15 percent of 200? Give only the final value.",
+      "accepted_patterns": [
+        "(?<![0-9.])30(?![0-9.])"
+      ],
+      "answer": "30",
+      "passed": true
+    }
+  ],
+  "accuracy": 1.0,
+  "minimum_accuracy": 0.8,
+  "seconds": 3.705063269000675,
+  "status": "accepted"
+}

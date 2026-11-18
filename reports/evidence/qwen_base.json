@@ -1,0 +1,13 @@
+{
+  "candidate": "base",
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+  "adapter": null,
+  "test_input_count": 73,
+  "scored": 73,
+  "rejected_fully_truncated": 0,
+  "mean_completion_loss": 1.4871897860749128,
+  "seconds": 86.20283672400001,
+  "seconds_per_scored": 1.180860777041096,
+  "status": "completed"
+}

@@ -1,6 +1,0 @@
-outs:
-- md5: 7c45c0fcaf241faac200c405118fbea6.dir
-  size: 72995850
-  nfiles: 43
-  hash: md5
-  path: qwen-v2

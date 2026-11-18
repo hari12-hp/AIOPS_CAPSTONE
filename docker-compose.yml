@@ -1,23 +1,107 @@
+name: capstone
 services:
   backend:
+    image: capstone-backend:latest
     build: {context: ., dockerfile: Dockerfile.backend}
-    ports: ["8000:8000"]
+    ports: ["127.0.0.1:8000:8000"]
     environment:
-      MATH_ASSISTANT_BASE_MODEL: ${MATH_ASSISTANT_BASE_MODEL:-Qwen/Qwen2.5-0.5B-Instruct}
-      MATH_ASSISTANT_BASE_REVISION: ${MATH_ASSISTANT_BASE_REVISION:-7ae557604adf67be50417f59c2c2f167def9a775}
-      MATH_ASSISTANT_ADAPTER_PATH: ${MATH_ASSISTANT_ADAPTER_PATH:-/models/adapters/qwen-v2}
+      MATH_ASSISTANT_SERVING_URL: http://model-serving:5002
     volumes:
-      - ./models/adapters:/models/adapters:ro
-      - ${MATH_ASSISTANT_HF_CACHE:-./.hf-cache}:/root/.cache/huggingface
+      - ./reports:/app/reports:ro
+      - ./models:/app/models:ro
+    depends_on:
+      model-serving: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+  model-serving:
+    image: capstone-backend:latest
+    working_dir: ${PROJECT_ROOT:-${PWD}}
+    command: [mlflow, models, serve, -m, "models:/local-math-assistant-qwen-cpu-v2@champion", --env-manager, local, --host, 0.0.0.0, --port, "5002", --workers, "1"]
+    environment:
+      MLFLOW_TRACKING_URI: sqlite:///${PROJECT_ROOT:-${PWD}}/mlflow.db
+      MATH_ASSISTANT_EXPORTER_PORT: "9101"
+      HF_HUB_OFFLINE: "1"
+      OMP_NUM_THREADS: "4"
+      MKL_NUM_THREADS: "4"
+    volumes:
+      - ${PROJECT_ROOT:-${PWD}}:${PROJECT_ROOT:-${PWD}}
+      - ${MATH_ASSISTANT_HF_CACHE:-${HOME}/.cache/huggingface}:/root/.cache/huggingface:ro
+    ports: ["127.0.0.1:5002:5002"]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:5002/ping')"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+    restart: unless-stopped
   frontend:
     build: {context: ., dockerfile: Dockerfile.frontend}
-    ports: ["8080:80"]
-    depends_on: [backend]
+    ports: ["127.0.0.1:8080:80", "127.0.0.1:8081:81"]
+    depends_on:
+      backend: {condition: service_healthy}
+    restart: unless-stopped
+  mlflow:
+    image: capstone-backend:latest
+    working_dir: ${PROJECT_ROOT:-${PWD}}
+    command: [mlflow, server, --backend-store-uri, "sqlite:///${PROJECT_ROOT:-${PWD}}/mlflow.db", --host, 0.0.0.0, --port, "5000", --workers, "1", --allowed-hosts, "localhost:*,127.0.0.1:*,mlflow:*"]
+    volumes: ["${PROJECT_ROOT:-${PWD}}:${PROJECT_ROOT:-${PWD}}"]
+    ports: ["127.0.0.1:5000:5000"]
+    restart: unless-stopped
   prometheus:
     image: prom/prometheus:v3.0.0
-    volumes: ["./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]
-    ports: ["9090:9090"]
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus", "--storage.tsdb.retention.time=15d", "--storage.tsdb.retention.size=2GB", "--web.external-url=http://localhost:19090"]
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - ./monitoring/recording_rules.yml:/etc/prometheus/recording_rules.yml:ro
+      - ./monitoring/tests:/etc/prometheus/tests:ro
+      - prometheus-data:/prometheus
+    ports: ["127.0.0.1:19090:9090"]
+    restart: unless-stopped
   grafana:
     image: grafana/grafana:11.4.0
-    ports: ["3000:3000"]
-    volumes: ["./monitoring/grafana:/etc/grafana/provisioning:ro"]
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /etc/grafana/provisioning/dashboards/local_math_assistant.json
+    ports: ["127.0.0.1:13000:3000"]
+    volumes:
+      - ./monitoring/grafana:/etc/grafana/provisioning:ro
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+  alertmanager:
+    image: prom/alertmanager:v0.28.1
+    command: ["--config.file=/etc/alertmanager/alertmanager.yml", "--storage.path=/alertmanager", "--web.external-url=http://localhost:19093", "--cluster.listen-address="]
+    volumes:
+      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager-data:/alertmanager
+    ports: ["127.0.0.1:19093:9093"]
+    restart: unless-stopped
+  blackbox:
+    image: prom/blackbox-exporter:v0.26.0
+    command: ["--config.file=/etc/blackbox/blackbox.yml"]
+    volumes: ["./monitoring/blackbox.yml:/etc/blackbox/blackbox.yml:ro"]
+    restart: unless-stopped
+  alert-receiver:
+    image: capstone-backend:latest
+    command: [python, -m, src.monitoring.alert_receiver]
+    environment:
+      ALERT_EVENT_DIR: /var/lib/math-alerts
+    volumes: ["alert-events:/var/lib/math-alerts"]
+    ports: ["127.0.0.1:19199:9199"]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:9199/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+volumes:
+  prometheus-data:
+  grafana-data:
+  alertmanager-data:
+  alert-events:

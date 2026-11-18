@@ -1,0 +1,10 @@
+{
+  "status": "completed",
+  "target": "register",
+  "started_at": 1795008291.396691,
+  "run_id": "32e0318271474a03b44ccfd0e98f759c",
+  "git_commit": "a9deb3287752cd74f0e4db5eb826a3939fb5c547",
+  "git_dirty": true,
+  "exit_code": 0,
+  "seconds": 2105.9812676906586
+}

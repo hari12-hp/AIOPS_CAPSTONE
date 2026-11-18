@@ -1,0 +1,9 @@
+# Source-only CI: no model weights or dataset downloads.
+fastapi==0.146.0
+uvicorn==0.54.0
+prometheus-client==0.24.1
+pytest==8.4.2
+httpx==0.28.1
+PyYAML==6.0.2
+dvc==3.67.1
+ruff==0.17.5

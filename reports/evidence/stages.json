@@ -1,0 +1,361 @@
+[
+  {
+    "name": "acceptance",
+    "status": "completed",
+    "started_at": 1795010831.684598,
+    "run_id": "7018d63a6c5d48b4a1ba0513a094d36a",
+    "parent_run_id": "32e0318271474a03b44ccfd0e98f759c",
+    "command": [
+      "/home/positive/aiops/capstone/.venv/bin/python",
+      "-m",
+      "src.training.evaluate_generation_benchmark",
+      "--model",
+      "Qwen/Qwen2.5-0.5B-Instruct",
+      "--revision",
+      "7ae557604adf67be50417f59c2c2f167def9a775",
+      "--adapter",
+      "models/adapters/qwen-v2",
+      "--max-new-tokens",
+      "48",
+      "--output",
+      "reports/evaluation/qwen_v2_generation.json"
+    ],
+    "git_commit": "a9deb3287752cd74f0e4db5eb826a3939fb5c547",
+    "git_dirty": true,
+    "outputs": {
+      "reports/evaluation/qwen_v2_generation.json": "c2470b98b471f6259af6043fb5db3e389345bd42cf31a9a0b72fe813ead0afb4"
+    },
+    "seconds": 11.39016318321228,
+    "finished_at": 1795010843.0747619
+  },
+  {
+    "name": "benchmark",
+    "status": "completed",
+    "started_at": 1795008319.8439367,
+    "run_id": "ec108c7eee8b42e990f0f14e3fd384fe",
+    "parent_run_id": "32e0318271474a03b44ccfd0e98f759c",
+    "command": [
+      "/home/positive/aiops/capstone/.venv/bin/python",
+      "-m",
+      "src.training.train_lora_cpu",
+      "--model",
+      "Qwen/Qwen2.5-0.5B-Instruct",
+      "--revision",
+      "7ae557604adf67be50417f59c2c2f167def9a775",
+      "--output",
+      "reports/runtime/benchmark-adapter",
+      "--benchmark-steps",
+      "3",
+      "--benchmark-report",
+      "reports/pipeline/benchmark.json",
+      "--max-rss-gib",
+      "6"
+    ],
+    "git_commit": "a9deb3287752cd74f0e4db5eb826a3939fb5c547",
+    "git_dirty": true,
+    "outputs": {
+      "reports/pipeline/benchmark.json": "4c1f380fe52e4979b493ebd16e6a23106e7f69b644eb103eaa26d17ac0860002"
+    },
+    "seconds": 15.03813099861145,
+    "finished_at": 1795008334.8820686
+  },
+  {
+    "name": "clean",
+    "status": "completed",
+    "started_at": 1795008303.7340913,
+    "run_id": "605f55eb36dc47c598c914bbb28ea58f",
+    "parent_run_id": "32e0318271474a03b44ccfd0e98f759c",
+    "command": [
+      "/home/positive/aiops/capstone/.venv/bin/python",
+      "-m",
+      "src.data.clean_with_spark",
+      "data/raw/numinamath.jsonl"
+    ],
+    "git_commit": "a9deb3287752cd74f0e4db5eb826a3939fb5c547",
+    "git_dirty": true,
+    "outputs": {
+      "data/cleaned/records": {
+        ".part-00000-d02eb82d-51d5-4c90-8b80-c83341201b23-c000.json.crc": "ec795fecb456f4b73b11fa4673a5b47514aa47cb29fbb71faca6b8412608c7c4",
+        "part-00000-d02eb82d-51d5-4c90-8b80-c83341201b23-c000.json": "b3d63f84597087e18287db9665d7403c2a3d7e7fa1b580e8218e9073e42d0d8a",
+        "_SUCCESS": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "._SUCCESS.crc": "1d44f510ec2ed7595badbec80583316defc14e8dd89130d719724149adfaa07d"
+      },
+      "reports/eda/quality.json": "21f4ad75f11550d62dc9183bd5b7ec58aafe8e72b4ed9d0bb74c7f816d688964"
+    },
+    "seconds": 11.532978773117065,
+    "finished_at": 1795008315.267071
+  },
+  {
+    "name": "diagnostic_failure",
+    "status": "failed",
+    "started_at": 1795008705.8799546,
+    "run_id": "2422a47ff292403897b9a928839e32e8",
+    "parent_run_id": null,
+    "command": [
+      "/home/positive/aiops/capstone/.venv/bin/python",
+      "-c",
+      "raise SystemExit(3)"
+    ],
+    "git_commit": "a9deb3287752cd74f0e4db5eb826a3939fb5c547",
+    "git_dirty": true,
+    "error": "Stage diagnostic_failure exited with code 3",
+    "seconds": 0.12459707260131836,
+    "finished_at": 1795008706.0045536
+  },
+  {
+    "name": "eda",
+    "status": "completed",
+    "started_at": 1795010181.3007524,
+    "run_id": "8418eefb262c4de18cfd1a51bab1eb18",
+    "parent_run_id": "32e0318271474a03b44ccfd0e98f759c",
+    "command": [
+      "/home/positive/aiops/capstone/.venv/bin/python",
+      "-m",
+      "src.data.eda",
+      "data/raw/numinamath.jsonl"
+    ],
+    "git_commit": "a9deb3287752cd74f0e4db5eb826a3939fb5c547",
+    "git_dirty": true,
+    "outputs": {
+      "reports/eda/report.json": "a1e48d4b2066561958fcd5cc5ebcdde913686bd03ee2150afe648fc47ff0ba5f",
+      "reports/eda/sample_review.json": "c2b684c35ab13a5db9b5d61a516d7e4cac7252c897eca6e461e1c038466f94e4"
+    },
+    "seconds": 0.20704269409179688,
+    "finished_at": 1795010181.5077963
+  },
+  {
+    "name": "evaluate_adapter",
+    "status": "completed",
+    "started_at": 1795010278.729911,
+    "run_id": "725508ac8e4e4e5f84d86548b4b6ed52",
+    "parent_run_id": "32e0318271474a03b44ccfd0e98f759c",
+    "command": [
+      "/home/positive/aiops/capstone/.venv/bin/python",
+      "-m",
+      "src.training.evaluate_models",
+      "--model",
+      "Qwen/Qwen2.5-0.5B-Instruct",
+      "--revision",
+      "7ae557604adf67be50417f59c2c2f167def9a775",
+      "--adapter",
+      "models/adapters/qwen-v2",
+      "--output",
+      "reports/evaluation/qwen_lora_v2.json"
+    ],
+    "git_commit": "a9deb3287752cd74f0e4db5eb826a3939fb5c547",
+    "git_dirty": true,
+    "outputs": {
+      "reports/evaluation/qwen_lora_v2.json": "8d8ae94061885316a018a4ea14e187c59e69942d5c1d2748a71f8f2b0ccbde90"
+    },
+    "seconds": 98.24163913726807,
+    "finished_at": 1795010376.9715512
+  },
+  {
+    "name": "evaluate_base",
+    "status": "completed",
+    "started_at": 1795010183.5957384,
+    "run_id": "955b4630d0a44c47beb3a2a28f2ddc50",
+    "parent_run_id": "32e0318271474a03b44ccfd0e98f759c",
+    "command": [
+      "/home/positive/aiops/capstone/.venv/bin/python",
+      "-m",
+      "src.training.evaluate_models",
+      "--model",
+      "Qwen/Qwen2.5-0.5B-Instruct",
+      "--revision",
+      "7ae557604adf67be50417f59c2c2f167def9a775",
+      "--output",
+      "reports/evaluation/qwen_base.json"
+    ],
+    "git_commit": "a9deb3287752cd74f0e4db5eb826a3939fb5c547",
+    "git_dirty": true,
+    "outputs": {
+      "reports/evaluation/qwen_base.json": "ecd629e07ba45d2232753eac285517edbc5db83f281dac3c2a224f5449af7aac"
+    },
+    "seconds": 93.14157056808472,
+    "finished_at": 1795010276.7373097
+  },
+  {
+    "name": "ingest",
+    "status": "completed",
+    "started_at": 1795008295.4371238,
+    "run_id": "f1913c7f4bdd489c8450674dcd204d85",
+    "parent_run_id": "32e0318271474a03b44ccfd0e98f759c",
+    "command": [
+      "/home/positive/aiops/capstone/.venv/bin/python",
+      "-m",
+      "src.data.ingest_dataset",
+      "--revision",
+      "1b05109f9e5c1ad06c0663519502416c30b300f8",
+      "--scan-limit",
+      "4000",
+      "--target",
+      "800"
+    ],
+    "git_commit": "a9deb3287752cd74f0e4db5eb826a3939fb5c547",
+    "git_dirty": true,
+    "outputs": {
+      "data/raw/numinamath.jsonl": "47e72aa828a7d8eed03aaa117469d1c25fa0268bbdde8526d2911411035b9869",
+      "reports/eda/ingestion.json": "f6b9e4568602e9a16aad357995c018af5ba303462897d8e6251b3f3420bb4b63"
+    },
+    "seconds": 6.418743848800659,
+    "finished_at": 1795008301.8558686
+  },
+  {
+    "name": "inspect",
+    "status": "completed",
+    "started_at": 1795008293.4139392,
+    "run_id": "5cf48fd589054a91bee7cb8bbbc25fd7",
+    "parent_run_id": "32e0318271474a03b44ccfd0e98f759c",
+    "command": [
+      "/home/positive/aiops/capstone/.venv/bin/python",
+      "-m",
+      "src.data.inspect_dataset"
+    ],
+    "git_commit": "a9deb3287752cd74f0e4db5eb826a3939fb5c547",
+    "git_dirty": true,
+    "outputs": {
+      "reports/runtime/environment.json": "ae1acb13073fb46fcb68a47c04f66ee5e7ce08faeda40de859f4918cc41bc68a"
+    },
+    "seconds": 0.13698410987854004,
+    "finished_at": 1795008293.550924
+  },
+  {
+    "name": "register",
+    "status": "completed",
+    "started_at": 1795010845.5368536,
+    "run_id": "63907d6bd0e949be80c5bd4cf472fcb9",
+    "parent_run_id": "32e0318271474a03b44ccfd0e98f759c",
+    "command": [
+      "/home/positive/aiops/capstone/.venv/bin/python",
+      "-m",
+      "src.training.register_model",
+      "--model",
+      "Qwen/Qwen2.5-0.5B-Instruct",
+      "--revision",
+      "7ae557604adf67be50417f59c2c2f167def9a775",
+      "--adapter",
+      "models/adapters/qwen-v2",
+      "--evaluation",
+      "reports/evaluation/qwen_lora_v2.json",
+      "--acceptance",
+      "reports/evaluation/qwen_v2_generation.json",
+      "--name",
+      "local-math-assistant-qwen-cpu-v2",
+      "--output",
+      "reports/pipeline/registration.json"
+    ],
+    "git_commit": "a9deb3287752cd74f0e4db5eb826a3939fb5c547",
+    "git_dirty": true,
+    "outputs": {
+      "reports/pipeline/registration.json": "9b2e8df4fe96820a4cd3e9ad79bf9612bca5a76909b8b3b3a25a5fcd37cdf19d"
+    },
+    "seconds": 3.4367172718048096,
+    "finished_at": 1795010848.9735715
+  },
+  {
+    "name": "split",
+    "status": "completed",
+    "started_at": 1795008317.451291,
+    "run_id": "fe0987aea2df4821b9f4fdf4265c0c5a",
+    "parent_run_id": "32e0318271474a03b44ccfd0e98f759c",
+    "command": [
+      "/home/positive/aiops/capstone/.venv/bin/python",
+      "-m",
+      "src.data.split_dataset",
+      "data/cleaned/records/part-*.json"
+    ],
+    "git_commit": "a9deb3287752cd74f0e4db5eb826a3939fb5c547",
+    "git_dirty": true,
+    "outputs": {
+      "data/splits": {
+        "train.jsonl": "4476840b9f268746760ddfe679d68e677cb5733ba52527aa65f473a86275a233",
+        "validation.jsonl": "2205fd231b0d20bf142eb864fd49dff576a9c81c12b9850f2b0d00abf90d21db",
+        "test.jsonl": "846cd0a6c889d6152d3c4942b8b0354a3c22092cc5542418b260526c4d188b3c"
+      },
+      "reports/eda/splits.json": "c25c66ec5b740bbaf8ff65c3bd548bf657976070eb47ba457684cfe8dd3eb663"
+    },
+    "seconds": 0.2315206527709961,
+    "finished_at": 1795008317.6828125
+  },
+  {
+    "name": "train",
+    "status": "completed",
+    "started_at": 1795008336.919498,
+    "run_id": "a73a13d4e5f0411180e14f227a10b49c",
+    "parent_run_id": "32e0318271474a03b44ccfd0e98f759c",
+    "command": [
+      "/home/positive/aiops/capstone/.venv/bin/python",
+      "-m",
+      "src.training.train_lora_cpu",
+      "--model",
+      "Qwen/Qwen2.5-0.5B-Instruct",
+      "--revision",
+      "7ae557604adf67be50417f59c2c2f167def9a775",
+      "--train-data",
+      "data/splits/train.jsonl",
+      "--output",
+      "models/adapters/qwen-v2",
+      "--max-length",
+      "256",
+      "--threads",
+      "4",
+      "--epochs",
+      "1",
+      "--learning-rate",
+      "5e-5",
+      "--train"
+    ],
+    "git_commit": "a9deb3287752cd74f0e4db5eb826a3939fb5c547",
+    "git_dirty": true,
+    "outputs": {
+      "models/adapters/qwen-v2": {
+        "adapter_model.safetensors": "250f394852745ef16ea716c7d0937a5b3ec7864028e79eb5d25d9bd4999d9267",
+        "adapter_config.json": "41b098c45b5c5d11f62079e9f6678ba5eee8ddc795dd70cd264c1662624b6984",
+        "tokenizer.json": "e1bb43ac6226b35aa5fb20bf7f7eeb9c8c63289288dc1ce1ea4c7c69d8079a1d",
+        "added_tokens.json": "58b54bbe36fc752f79a24a271ef66a0a0830054b4dfad94bde757d851968060b",
+        "training_result.json": "cea71145340aeecc9e0439c2ad3d219ec09a72fbdb7c323855bf58943f31d6bb",
+        "merges.txt": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5",
+        "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
+        "tokenizer_config.json": "0a04a9d7d4a62b28482bdfe726c122756de85714fb64166ace92ae75b8f57614",
+        "chat_template.jinja": "cd8e9439f0570856fd70470bf8889ebd8b5d1107207f67a5efb46e342330527f",
+        "special_tokens_map.json": "b82ed33617eedfa71a8e8dda13de1bb8a5443fdf9910cc23e47a6a1585b8a951",
+        "README.md": "42d0e4793306462ecc78650475691804993198c54c89f51becd388224322453f",
+        "checkpoint-50/adapter_model.safetensors": "7b265179f1740c06c0139bcfcc29645a924cbe3bd6a5682ce10d43dbae4af24e",
+        "checkpoint-50/adapter_config.json": "41b098c45b5c5d11f62079e9f6678ba5eee8ddc795dd70cd264c1662624b6984",
+        "checkpoint-50/trainer_state.json": "578422fc75a84681408672242135169d94cf5f6a2ab747ca15badc278f8f48e7",
+        "checkpoint-50/rng_state.pth": "0756ade78bf44b95a2c22182ac52ab97f8034b81b1fcf4782f9c95fa75e12c56",
+        "checkpoint-50/scheduler.pt": "849493b54716b97563480a30126471e1fd5936621c25533b85e4531e5dffc327",
+        "checkpoint-50/optimizer.pt": "5d764516f395fbf651ffb4d544f442aebfbeee34a16fdc6caa15706732f374da",
+        "checkpoint-50/training_args.bin": "e8bba4045bed0fd77cae0b7e5f969110c6eee7d016134821c6cca705bef8ab72",
+        "checkpoint-50/README.md": "42d0e4793306462ecc78650475691804993198c54c89f51becd388224322453f",
+        "checkpoint-150/adapter_model.safetensors": "287185d9937d52afabeb60a8b09168ee30edc9f93b112c12af597f99e7876d79",
+        "checkpoint-150/adapter_config.json": "41b098c45b5c5d11f62079e9f6678ba5eee8ddc795dd70cd264c1662624b6984",
+        "checkpoint-150/trainer_state.json": "88febf4ba6c975f8b2027b93a4e8c8736bdd7ac5e20eb6a6c0226daca4445328",
+        "checkpoint-150/rng_state.pth": "b8030b7d27beb18cf2b3d8c4f2fcf69890d5c0e47eeb60c1094d3f063a1ec441",
+        "checkpoint-150/scheduler.pt": "49378acbb30c5ccf81be2e3e4eded315748180713162be240d5c2ffd2026f70b",
+        "checkpoint-150/optimizer.pt": "9345b4aa3640abf1bd3ee6bf562cbee8a82d39a355bdcc3002d2fd65d1dc15c6",
+        "checkpoint-150/training_args.bin": "e8bba4045bed0fd77cae0b7e5f969110c6eee7d016134821c6cca705bef8ab72",
+        "checkpoint-150/README.md": "42d0e4793306462ecc78650475691804993198c54c89f51becd388224322453f",
+        "checkpoint-100/adapter_model.safetensors": "88640088b8affd4209053a8a9b39c0d7b8359dbf0bd79b19d9203e5975386081",
+        "checkpoint-100/adapter_config.json": "41b098c45b5c5d11f62079e9f6678ba5eee8ddc795dd70cd264c1662624b6984",
+        "checkpoint-100/trainer_state.json": "d8dee2eedac444eda780309a23f01ab487754fd61d2f15d7f034e4e3fff7a1e6",
+        "checkpoint-100/rng_state.pth": "84cf3bde71562a580c9ad9ad18d79ebc1f7a4e8bfde918b102448edb3fdfecaf",
+        "checkpoint-100/scheduler.pt": "6b4f5c1a4a6c0e7061b40091097d0c2ed737457fdbfeaba7afe839b20a97e924",
+        "checkpoint-100/optimizer.pt": "99c7c86667c414c71cd933a5c057e1e780eac023b4c9cfd4acf5d7523418a419",
+        "checkpoint-100/training_args.bin": "e8bba4045bed0fd77cae0b7e5f969110c6eee7d016134821c6cca705bef8ab72",
+        "checkpoint-100/README.md": "42d0e4793306462ecc78650475691804993198c54c89f51becd388224322453f",
+        "checkpoint-159/adapter_model.safetensors": "250f394852745ef16ea716c7d0937a5b3ec7864028e79eb5d25d9bd4999d9267",
+        "checkpoint-159/adapter_config.json": "41b098c45b5c5d11f62079e9f6678ba5eee8ddc795dd70cd264c1662624b6984",
+        "checkpoint-159/trainer_state.json": "1ab13c173231bd55a499ea02566ca2041989e81526f5a50d5c9d9b5c30d06583",
+        "checkpoint-159/rng_state.pth": "2171e76ed53f3a4af77ecfbafc41e10e98f95d4332cb6314e423509fdb7d1b5d",
+        "checkpoint-159/scheduler.pt": "c7874fe455144a02d680bcd0499c27c1291b907872d2795831b562fd4e7e476c",
+        "checkpoint-159/optimizer.pt": "64d6067b25aa71d6bff7025cc877516f9820f80f2d48dd1d437583b36aad2b63",
+        "checkpoint-159/training_args.bin": "e8bba4045bed0fd77cae0b7e5f969110c6eee7d016134821c6cca705bef8ab72",
+        "checkpoint-159/README.md": "42d0e4793306462ecc78650475691804993198c54c89f51becd388224322453f"
+      }
+    },
+    "seconds": 1655.8627061843872,
+    "finished_at": 1795009992.78234
+  }
+]

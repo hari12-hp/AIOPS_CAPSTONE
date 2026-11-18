@@ -1,0 +1,2 @@
+# Optional PDF export/metadata dependency; not required for serving/training.
+pypdf==6.21.4

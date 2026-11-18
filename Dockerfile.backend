@@ -1,10 +1,11 @@
-FROM python:3.14-slim
+FROM python:3.14.6-slim
 WORKDIR /app
 COPY requirements.lock .
 RUN pip install --no-cache-dir -r requirements.lock
 COPY src ./src
 COPY frontend ./frontend
 COPY reports ./reports
+COPY monitoring ./monitoring
 ENV PYTHONPATH=/app
 EXPOSE 8000
 CMD ["uvicorn","src.app.main:app","--host","0.0.0.0","--port","8000"]

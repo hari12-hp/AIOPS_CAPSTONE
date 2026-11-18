@@ -1,0 +1,12 @@
+{
+  "run_id": "63907d6bd0e949be80c5bd4cf472fcb9",
+  "model_name": "local-math-assistant-qwen-cpu-v2",
+  "version": 3,
+  "model_uri": "models:/m-45811d9a069a48b19359f3eb1dbd69e5",
+  "validation_status": "accepted",
+  "adapter_sha256": "250f394852745ef16ea716c7d0937a5b3ec7864028e79eb5d25d9bd4999d9267",
+  "cases": 5,
+  "accuracy": 1.0,
+  "minimum_accuracy": 0.8,
+  "accepted": true
+}

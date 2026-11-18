@@ -1,5 +1,0 @@
-outs:
-- md5: 0db7ed338694a522540c3b2dfaf2e6fe
-  size: 327
-  hash: md5
-  path: qwen_base.json

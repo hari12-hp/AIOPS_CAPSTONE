@@ -1,0 +1,180 @@
+{
+  "executed_at": "2026-11-18T15:14:41.835322+00:00",
+  "drill": true,
+  "checks": [
+    {
+      "name": "All configured scrape targets are up",
+      "passed": true,
+      "detail": {
+        "alert-receiver/alert-receiver:9199": "up",
+        "alertmanager/alertmanager:9093": "up",
+        "blackbox/blackbox:9115": "up",
+        "grafana/grafana:3000": "up",
+        "http-probes/model-serving": "up",
+        "http-probes/grafana": "up",
+        "http-probes/alertmanager": "up",
+        "http-probes/pipeline-console": "up",
+        "http-probes/mlflow": "up",
+        "http-probes/alert-inbox": "up",
+        "http-probes/workspace": "up",
+        "http-probes/api": "up",
+        "math-assistant/backend:8000": "up",
+        "math-model/model-serving:9101": "up",
+        "prometheus/localhost:9090": "up"
+      }
+    },
+    {
+      "name": "Eight HTTP endpoints are ready",
+      "passed": true,
+      "detail": {
+        "alert-inbox": "1",
+        "pipeline-console": "1",
+        "grafana": "1",
+        "alertmanager": "1",
+        "mlflow": "1",
+        "api": "1",
+        "model-serving": "1",
+        "workspace": "1"
+      }
+    },
+    {
+      "name": "Recording and alert rules evaluate without errors",
+      "passed": true,
+      "detail": 23
+    },
+    {
+      "name": "Prometheus routes to Alertmanager",
+      "passed": true,
+      "detail": [
+        {
+          "url": "http://alertmanager:9093/api/v2/alerts"
+        }
+      ]
+    },
+    {
+      "name": "Alertmanager is ready",
+      "passed": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "Provisioned dashboard: local-math-assistant",
+      "passed": true,
+      "detail": "Math Studio \u00b7 Service Operations"
+    },
+    {
+      "name": "Dashboard queries evaluate: local-math-assistant",
+      "passed": true,
+      "detail": 21
+    },
+    {
+      "name": "Provisioned dashboard: math-alert-center",
+      "passed": true,
+      "detail": "Math Studio \u00b7 Alert Center"
+    },
+    {
+      "name": "Dashboard queries evaluate: math-alert-center",
+      "passed": true,
+      "detail": 12
+    },
+    {
+      "name": "Provisioned dashboard: math-mlops",
+      "passed": true,
+      "detail": "Math Studio \u00b7 ML Pipeline"
+    },
+    {
+      "name": "Dashboard queries evaluate: math-mlops",
+      "passed": true,
+      "detail": 11
+    },
+    {
+      "name": "Local alert inbox is healthy",
+      "passed": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "Recent real Watchdog notification delivered",
+      "passed": true,
+      "detail": {
+        "received_at": "2026-11-18T15:14:04.543672+00:00",
+        "status": "firing",
+        "kind": "heartbeat",
+        "alerts": [
+          {
+            "status": "firing",
+            "labels": {
+              "alertname": "Watchdog",
+              "severity": "info",
+              "component": "alerting",
+              "environment": "local"
+            },
+            "annotations": {
+              "summary": "Alert delivery heartbeat",
+              "description": "Always firing by design; routed separately and excluded from incident counts.",
+              "runbook_url": "http://localhost:19199/runbook#monitoring-integrity"
+            },
+            "startsAt": "2026-11-18T15:05:04.473Z",
+            "endsAt": "0001-01-01T00:00:00Z"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Controlled alert reached inbox as firing",
+      "passed": true,
+      "detail": {
+        "received_at": "2026-11-18T15:15:04.477435+00:00",
+        "status": "firing",
+        "kind": "drill",
+        "alerts": [
+          {
+            "status": "firing",
+            "labels": {
+              "alertname": "AlertDeliveryDrill",
+              "severity": "info",
+              "component": "alerting",
+              "instance": "alert-receiver:9199",
+              "environment": "local"
+            },
+            "annotations": {
+              "summary": "Controlled local alert delivery drill",
+              "description": "A temporary synthetic signal tests evaluation, routing and recovery without stopping an application service.",
+              "runbook_url": "http://localhost:19199/runbook#delivery-drill"
+            },
+            "startsAt": "2026-11-18T15:15:04.473Z",
+            "endsAt": "0001-01-01T00:00:00Z"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Controlled alert reached inbox as resolved",
+      "passed": true,
+      "detail": {
+        "received_at": "2026-11-18T15:15:19.477784+00:00",
+        "status": "resolved",
+        "kind": "drill",
+        "alerts": [
+          {
+            "status": "resolved",
+            "labels": {
+              "alertname": "AlertDeliveryDrill",
+              "severity": "info",
+              "component": "alerting",
+              "instance": "alert-receiver:9199",
+              "environment": "local"
+            },
+            "annotations": {
+              "summary": "Controlled local alert delivery drill",
+              "description": "A temporary synthetic signal tests evaluation, routing and recovery without stopping an application service.",
+              "runbook_url": "http://localhost:19199/runbook#delivery-drill"
+            },
+            "startsAt": "2026-11-18T15:15:04.473Z",
+            "endsAt": "2026-11-18T15:15:19.473Z"
+          }
+        ]
+      }
+    }
+  ],
+  "passed": 15,
+  "failed": 0
+}

@@ -1,0 +1,7 @@
+NAME                       IMAGE                     COMMAND                  SERVICE         CREATED          STATUS                   PORTS
+capstone-backend-1         capstone-backend:latest   "uvicorn src.app.mai…"   backend         5 minutes ago    Up 5 minutes (healthy)   127.0.0.1:8000->8000/tcp
+capstone-frontend-1        capstone-frontend         "/docker-entrypoint.…"   frontend        3 minutes ago    Up 3 minutes             127.0.0.1:8080->80/tcp
+capstone-grafana-1         grafana/grafana:11.4.0    "/run.sh"                grafana         44 minutes ago   Up 44 minutes            127.0.0.1:13000->3000/tcp
+capstone-mlflow-1          capstone-backend:latest   "mlflow server --bac…"   mlflow          5 minutes ago    Up 5 minutes             127.0.0.1:5000->5000/tcp, 8000/tcp
+capstone-model-serving-1   capstone-backend:latest   "mlflow models serve…"   model-serving   5 minutes ago    Up 5 minutes (healthy)   127.0.0.1:5002->5002/tcp, 8000/tcp
+capstone-prometheus-1      prom/prometheus:v3.0.0    "/bin/prometheus --c…"   prometheus      42 minutes ago   Up 42 minutes            127.0.0.1:19090->9090/tcp

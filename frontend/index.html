@@ -1,1 +1,27 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mathematics Assistant</title><link rel="stylesheet" href="style.css"></head><body><main><header><a class="brand" href="/">∑ <span>math assistant</span></a><span class="status" id="status"><i></i> Checking service</span></header><section class="hero"><p class="eyebrow">LOCAL, CPU-ONLY</p><h1>Work through a problem.</h1><p class="lede">Ask a mathematical question and receive a concise, deterministic response.</p></section><section class="solver"><label for="question">Your question</label><textarea id="question" placeholder="For example: Solve 2x + 3 = 11."></textarea><div class="actions"><span class="shortcut">Ctrl + Enter to solve</span><button id="solve">Solve <span>↗</span></button></div><section class="answer" id="answer" aria-live="polite" hidden><p class="answer-label">Answer</p><div id="answer-text"></div><p class="latency" id="latency"></p></section><p class="error" id="error" role="alert"></p></section><details class="technical"><summary>System details</summary><dl><div><dt>Service</dt><dd id="service-detail">Loading…</dd></div><div><dt>Data records</dt><dd id="data-detail">Loading…</dd></div><div><dt>Selected model</dt><dd id="model-detail">Loading…</dd></div></dl><p>Pipeline and evaluation evidence remain available without exposing implementation JSON in the main workspace.</p></details></main><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Math Studio · Mathematics Assistant</title>
+  <link rel="stylesheet" href="style.css"><link rel="stylesheet" href="vendor/katex/katex.min.css">
+</head>
+<body class="workspace-page">
+  <main>
+    <header><a class="brand" href="/" aria-label="Math Studio home"><span class="brand-mark">∑</span> Math Studio</a><nav aria-label="Main navigation"><a href="help.html">Guide</a></nav><span class="status" id="status"><i></i> Connecting</span></header>
+    <section class="hero"><h1>Hello Mathematician</h1></section>
+    <div class="workspace-grid">
+      <section class="solver" aria-labelledby="question-label">
+        <div class="section-heading"><label id="question-label" for="question">What are you working on?</label><span class="small-label" id="char-count">0 / 8,000</span></div>
+        <textarea id="question" maxlength="8000" placeholder="For example: Solve 2x + 3 = 11 for x. Give only the final value." aria-describedby="input-tip"></textarea>
+        <div class="actions"><span class="shortcut" id="input-tip">Ctrl / ⌘ + Enter to solve</span><button id="solve" type="button">Solve problem <span aria-hidden="true">↗</span></button></div>
+        <p class="error" id="error" role="alert"></p>
+        <p class="progress-note" id="progress" role="status" hidden>Working through your question. The first answer can take longer while the model starts.</p>
+        <section class="answer" id="answer" aria-live="polite" hidden><div class="section-heading"><p class="answer-label">Answer</p><button type="button" class="text-button" id="copy">Copy answer</button></div><div id="answer-text"></div><p class="latency" id="latency"></p></section>
+      </section>
+      <aside class="examples" aria-label="Example questions"><button type="button" data-example="Solve 2x + 3 = 11 for x. Give only the final value."><span>Algebra</span>Solve a linear equation <b aria-hidden="true">↗</b></button><button type="button" data-example="What is 3/4 plus 1/8? Give only the simplified fraction."><span>Fractions</span>Add two fractions <b aria-hidden="true">↗</b></button><button type="button" data-example="What is the area of a rectangle with length 9 and width 4? Give only the final value."><span>Geometry</span>Find a rectangle’s area <b aria-hidden="true">↗</b></button><p class="aside-note">Check the reasoning before using an answer. This assistant is designed for practice and exploration.</p></aside>
+    </div>
+    <footer><span>Runs locally. Your questions stay on this computer.</span><a href="http://localhost:8081/" target="_blank" rel="noopener">Pipeline console <span aria-hidden="true">↗</span></a></footer>
+  </main>
+  <script src="config.js"></script><script src="vendor/katex/katex.min.js"></script><script src="vendor/katex/auto-render.min.js"></script><script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "candidate": "base",
+  "model": "google/gemma-3-1b-it",
+  "revision": "dcc83ea841ab6100d6b47a070329e1ba4cf78752",
+  "adapter": null,
+  "test_input_count": 73,
+  "scored": 73,
+  "rejected_fully_truncated": 0,
+  "mean_completion_loss": 2.7882308976290977,
+  "seconds": 151.99626493500546,
+  "seconds_per_scored": 2.08214061554802,
+  "status": "completed"
+}

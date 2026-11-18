@@ -1,0 +1,14 @@
+{
+  "train": {
+    "count": 642,
+    "sha256": "4476840b9f268746760ddfe679d68e677cb5733ba52527aa65f473a86275a233"
+  },
+  "validation": {
+    "count": 83,
+    "sha256": "2205fd231b0d20bf142eb864fd49dff576a9c81c12b9850f2b0d00abf90d21db"
+  },
+  "test": {
+    "count": 73,
+    "sha256": "846cd0a6c889d6152d3c4942b8b0354a3c22092cc5542418b260526c4d188b3c"
+  }
+}

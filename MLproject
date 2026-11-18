@@ -1,6 +1,11 @@
-name: local-math-assistant-cpu-training
+name: local-mathematics-assistant
+python_env: python_env.yaml
 entry_points:
   inspect:
     command: python -m src.data.inspect_dataset
   test:
-    command: pytest -q
+    command: python -m pytest -q --junitxml=reports/test-results.xml
+  prepare_data:
+    command: python -m src.pipeline.run --target split
+  pipeline:
+    command: python -m src.pipeline.run

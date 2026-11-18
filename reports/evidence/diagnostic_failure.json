@@ -1,0 +1,17 @@
+{
+  "name": "diagnostic_failure",
+  "status": "failed",
+  "started_at": 1795008705.8799546,
+  "run_id": "2422a47ff292403897b9a928839e32e8",
+  "parent_run_id": null,
+  "command": [
+    "/home/positive/aiops/capstone/.venv/bin/python",
+    "-c",
+    "raise SystemExit(3)"
+  ],
+  "git_commit": "a9deb3287752cd74f0e4db5eb826a3939fb5c547",
+  "git_dirty": true,
+  "error": "Stage diagnostic_failure exited with code 3",
+  "seconds": 0.12459707260131836,
+  "finished_at": 1795008706.0045536
+}

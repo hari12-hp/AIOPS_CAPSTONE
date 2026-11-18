@@ -1,0 +1,19 @@
+{
+  "dataset": "AI-MO/NuminaMath-1.5",
+  "revision": "1b05109f9e5c1ad06c0663519502416c30b300f8",
+  "scanned": 800,
+  "written": 800,
+  "schema": {
+    "problem": "str",
+    "solution": "str",
+    "answer": "str",
+    "problem_type": "str",
+    "question_type": "str",
+    "problem_is_valid": "str",
+    "solution_is_valid": "str",
+    "source": "str",
+    "synthetic": "bool"
+  },
+  "engine": "pyarrow_parquet_range",
+  "seconds": 6.240418614000191
+}

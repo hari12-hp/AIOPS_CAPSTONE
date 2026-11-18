@@ -1,56 +1,23 @@
 #!/usr/bin/env bash
-# One-command evaluator for the submitted local Mathematics Assistant.
+# Verify local source and evidence; use --full for a fresh generation smoke run.
 set -euo pipefail
-
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-FULL_MODE=false
-
-if [[ "${1:-}" == "--full" ]]; then
-  FULL_MODE=true
-elif [[ $# -gt 0 ]]; then
-  echo "Usage: $0 [--full]" >&2
-  exit 2
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+case "${1:-}" in ''|--full) ;; *) echo 'Usage: scripts/evaluate_submission.sh [--full]' >&2; exit 2;; esac
+if [[ ! -x .venv/bin/python ]]; then echo 'Run scripts/setup.sh first.' >&2; exit 1; fi
+.venv/bin/python -m pytest -q --junitxml=reports/test-results.xml
+.venv/bin/dvc dag
+.venv/bin/dvc status
+.venv/bin/python -m src.training.verify_submission
+docker compose config -q
+.venv/bin/python -m json.tool monitoring/grafana/dashboards/local_math_assistant.json >/dev/null
+docker compose run --rm --no-deps --entrypoint promtool prometheus check config /etc/prometheus/prometheus.yml
+docker compose run --rm --no-deps --entrypoint promtool prometheus test rules /etc/prometheus/tests/alerts.test.yml /etc/prometheus/tests/recording.test.yml
+docker compose run --rm --no-deps --entrypoint amtool alertmanager check-config /etc/alertmanager/alertmanager.yml
+if [[ "${1:-}" == '--full' ]]; then
+  OMP_NUM_THREADS=4 .venv/bin/python -m src.training.evaluate_generation_benchmark \
+    --model Qwen/Qwen2.5-0.5B-Instruct --revision 7ae557604adf67be50417f59c2c2f167def9a775 \
+    --adapter models/adapters/qwen-v2 --max-new-tokens 48 \
+    --output reports/runtime/qwen_generation_rerun.json
+  .venv/bin/python -m src.training.verify_submission --report reports/runtime/qwen_generation_rerun.json
 fi
-
-if [[ ! -x "$ROOT_DIR/.venv/bin/python" ]]; then
-  echo "Missing project environment: create .venv and install requirements.lock first." >&2
-  exit 1
-fi
-
-cd "$ROOT_DIR"
-source .venv/bin/activate
-
-echo "==> Restoring DVC-tracked submission artifacts"
-dvc pull -q
-
-echo "==> Running unit and contract tests"
-python -m pytest -q
-
-echo "==> Checking DVC graph state"
-dvc status
-
-echo "==> Validating deployment and dashboard configuration"
-docker compose config >/tmp/local-math-assistant-compose.yml
-python -m json.tool monitoring/grafana/dashboards/local_math_assistant.json >/dev/null
-
-echo "==> Verifying saved Qwen V2 acceptance evidence"
-python -m src.training.verify_submission
-
-if [[ "$FULL_MODE" == true ]]; then
-  echo "==> Re-running deterministic Qwen V2 generated-answer gate"
-  RERUN_REPORT="reports/runtime/qwen_v2_generation_rerun.json"
-  python -m src.training.evaluate_generation_benchmark \
-    --model Qwen/Qwen2.5-0.5B-Instruct \
-    --revision 7ae557604adf67be50417f59c2c2f167def9a775 \
-    --adapter models/adapters/qwen-v2 \
-    --benchmark configs/generation_benchmark.json \
-    --max-new-tokens 48 \
-    --minimum-accuracy 0.8 \
-    --output "$RERUN_REPORT"
-  python -m src.training.verify_submission --report "$RERUN_REPORT"
-fi
-
-echo ""
-echo "Submission evaluation passed."
-echo "UI: http://localhost:8080 (after: docker compose up --build)"
-echo "Evidence: docs/evaluation_report.md"
+printf '\nLocal submission verification passed.\n'

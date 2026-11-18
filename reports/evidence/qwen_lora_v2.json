@@ -1,0 +1,13 @@
+{
+  "candidate": "adapter",
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+  "adapter": "models/adapters/qwen-v2",
+  "test_input_count": 73,
+  "scored": 73,
+  "rejected_fully_truncated": 0,
+  "mean_completion_loss": 1.350492925676581,
+  "seconds": 92.20745814600014,
+  "seconds_per_scored": 1.2631158650137004,
+  "status": "completed"
+}

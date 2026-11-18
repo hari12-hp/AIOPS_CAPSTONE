@@ -1,5 +1,51 @@
-global: {scrape_interval: 15s}
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+  external_labels: {cluster: math-studio-local, environment: local}
+rule_files:
+  - /etc/prometheus/alerts.yml
+  - /etc/prometheus/recording_rules.yml
+alerting:
+  alertmanagers:
+    - static_configs: [{targets: ["alertmanager:9093"]}]
 scrape_configs:
   - job_name: math-assistant
     metrics_path: /metrics
-    static_configs: [{targets: ["backend:8000"]}]
+    static_configs: [{targets: ["backend:8000"], labels: {component: api}}]
+  - job_name: math-model
+    static_configs: [{targets: ["model-serving:9101"], labels: {component: model}}]
+  - job_name: prometheus
+    static_configs: [{targets: ["localhost:9090"], labels: {component: monitoring}}]
+  - job_name: grafana
+    static_configs: [{targets: ["grafana:3000"], labels: {component: monitoring}}]
+  - job_name: alertmanager
+    static_configs: [{targets: ["alertmanager:9093"], labels: {component: monitoring}}]
+  - job_name: blackbox
+    static_configs: [{targets: ["blackbox:9115"], labels: {component: monitoring}}]
+  - job_name: alert-receiver
+    static_configs: [{targets: ["alert-receiver:9199"], labels: {component: alerting}}]
+  - job_name: http-probes
+    metrics_path: /probe
+    params: {module: [http_2xx]}
+    static_configs:
+      - targets: ["http://frontend:80/"]
+        labels: {service: workspace, component: frontend}
+      - targets: ["http://frontend:81/"]
+        labels: {service: pipeline-console, component: frontend}
+      - targets: ["http://frontend:80/health"]
+        labels: {service: api, component: api}
+      - targets: ["http://model-serving:5002/ping"]
+        labels: {service: model-serving, component: model}
+      - targets: ["http://mlflow:5000/health"]
+        labels: {service: mlflow, component: tracking}
+      - targets: ["http://grafana:3000/api/health"]
+        labels: {service: grafana, component: monitoring}
+      - targets: ["http://alertmanager:9093/-/ready"]
+        labels: {service: alertmanager, component: monitoring}
+      - targets: ["http://alert-receiver:9199/health"]
+        labels: {service: alert-inbox, component: alerting}
+    relabel_configs:
+      - {source_labels: [__address__], target_label: __param_target}
+      - {source_labels: [service], target_label: instance}
+      - {target_label: __address__, replacement: "blackbox:9115"}

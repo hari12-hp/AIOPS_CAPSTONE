@@ -1,0 +1,108 @@
+{
+  "executed_at": 1795014881.7762527,
+  "checks": [
+    {
+      "name": "FastAPI health",
+      "passed": true,
+      "detail": {
+        "status": "ok",
+        "model_loaded": false,
+        "configured": true,
+        "inference_engine": "mlflow"
+      }
+    },
+    {
+      "name": "Nginx \u2192 FastAPI \u2192 MLflow: Algebra",
+      "passed": true,
+      "detail": {
+        "answer": "$x = 4$",
+        "latency_seconds": 1.4592715580001823,
+        "model_loaded": true
+      }
+    },
+    {
+      "name": "Nginx \u2192 FastAPI \u2192 MLflow: Fractions",
+      "passed": true,
+      "detail": {
+        "answer": "$\\frac{7}{8}$",
+        "latency_seconds": 1.0202880769993499,
+        "model_loaded": true
+      }
+    },
+    {
+      "name": "MLflow tracking health",
+      "passed": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "MLflow registered serving health",
+      "passed": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "Grafana provisioned dashboard",
+      "passed": true,
+      "detail": "Math Studio \u00b7 Service Operations"
+    },
+    {
+      "name": "Prometheus exporters",
+      "passed": true,
+      "detail": {
+        "alert-receiver": "up",
+        "alertmanager": "up",
+        "blackbox": "up",
+        "grafana": "up",
+        "http-probes": "up",
+        "math-assistant": "up",
+        "math-model": "up",
+        "prometheus": "up"
+      }
+    },
+    {
+      "name": "Live model generation metric",
+      "passed": true,
+      "detail": [
+        {
+          "metric": {
+            "__name__": "math_model_predictions_total",
+            "component": "model",
+            "instance": "model-serving:9101",
+            "job": "math-model"
+          },
+          "value": [
+            1795014881.75,
+            "2"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Question partitions are disjoint",
+      "passed": true,
+      "detail": {
+        "train": 642,
+        "validation": 83,
+        "test": 73
+      }
+    },
+    {
+      "name": "Complete pipeline",
+      "passed": true,
+      "detail": {
+        "inspect": "completed",
+        "ingest": "completed",
+        "eda": "completed",
+        "clean": "completed",
+        "split": "completed",
+        "benchmark": "completed",
+        "train": "completed",
+        "evaluate_base": "completed",
+        "evaluate_adapter": "completed",
+        "acceptance": "completed",
+        "register": "completed"
+      }
+    }
+  ],
+  "passed": 10,
+  "failed": 0
+}

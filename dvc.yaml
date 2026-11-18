@@ -1,33 +1,139 @@
 stages:
-  inspect_and_ingest:
-    cmd: .venv/bin/python -m src.data.inspect_dataset
-    deps: [src/data/inspect_dataset.py, artifacts/input/pilot-v1]
-    outs: [reports/runtime/environment.json]
-  ingest_dataset:
-    cmd: .venv/bin/python -m src.data.ingest_dataset --revision 1b05109f9e5c1ad06c0663519502416c30b300f8 --scan-limit 4000 --target 800
-    deps: [src/data/ingest_dataset.py, configs/data.yaml]
-    outs: [data/raw/numinamath.jsonl, reports/eda/ingestion.json]
+  inspect:
+    cmd: .venv/bin/python -m src.pipeline.stage inspect -- python -m src.data.inspect_dataset
+    deps:
+    - src/pipeline/stage.py
+    - src/training/model_metadata.py
+    - src/data/inspect_dataset.py
+    outs:
+    - reports/runtime/environment.json
+  ingest:
+    cmd: .venv/bin/python -m src.pipeline.stage ingest -- python -m src.data.ingest_dataset
+      --revision 1b05109f9e5c1ad06c0663519502416c30b300f8 --scan-limit 4000 --target
+      800
+    deps:
+    - src/pipeline/stage.py
+    - src/training/model_metadata.py
+    - src/data/ingest_dataset.py
+    - src/data/common.py
+    - configs/data.yaml
+    outs:
+    - data/raw/numinamath.jsonl
+    - reports/eda/ingestion.json
   eda:
-    cmd: .venv/bin/python -m src.data.eda data/raw/numinamath.jsonl
-    deps: [src/data/eda.py, data/raw/numinamath.jsonl]
-    outs: [reports/eda/report.json, reports/eda/sample_review.json]
-  clean_with_pyspark:
-    cmd: .venv/bin/python -m src.data.clean_with_spark data/raw/numinamath.jsonl
-    deps: [src/data/clean_with_spark.py, data/raw/numinamath.jsonl]
-    outs: [data/cleaned/records, reports/eda/quality.json]
-  split_and_validate:
-    cmd: .venv/bin/python -m src.data.split_dataset data/cleaned/records/part-*.json
-    deps: [src/data/split_dataset.py, data/cleaned/records]
-    outs: [data/splits, reports/eda/splits.json]
-  cpu_benchmark:
-    cmd: .venv/bin/python -m src.training.train_lora_cpu --model google/gemma-3-1b-it --revision dcc83ea841ab6100d6b47a070329e1ba4cf78752 --output models/adapters/gemma-v2 --benchmark-steps 3 --benchmark-report reports/runtime/gemma_benchmark.json --max-rss-gib 8
-    deps: [src/training/train_lora_cpu.py, data/splits/train.jsonl]
-    outs: [reports/runtime/gemma_benchmark.json]
-  train_gemma_cpu_v2:
-    cmd: .venv/bin/python -m src.training.train_lora_cpu --model google/gemma-3-1b-it --revision dcc83ea841ab6100d6b47a070329e1ba4cf78752 --train-data data/splits/train.jsonl --output models/adapters/gemma-v2 --max-length 256 --threads 6 --epochs 1 --learning-rate 5e-5 --train
-    deps: [src/training/train_lora_cpu.py, configs/train_gemma_v2.yaml, data/splits/train.jsonl]
-    frozen: true
-  evaluate_gemma_v2:
-    cmd: .venv/bin/python -m src.training.evaluate_models --model google/gemma-3-1b-it --revision dcc83ea841ab6100d6b47a070329e1ba4cf78752 --adapter models/adapters/gemma-v2 --test-data data/splits/test.jsonl --max-length 256 --output reports/evaluation/gemma_v2.json
-    deps: [src/training/evaluate_models.py, data/splits/test.jsonl, models/adapters/gemma-v2]
-    frozen: true
+    cmd: .venv/bin/python -m src.pipeline.stage eda -- python -m src.data.eda data/raw/numinamath.jsonl
+    deps:
+    - src/pipeline/stage.py
+    - src/training/model_metadata.py
+    - src/data/eda.py
+    - src/data/common.py
+    - data/raw/numinamath.jsonl
+    outs:
+    - reports/eda/report.json
+    - reports/eda/sample_review.json
+  clean:
+    cmd: .venv/bin/python -m src.pipeline.stage clean -- python -m src.data.clean_with_spark
+      data/raw/numinamath.jsonl
+    deps:
+    - src/pipeline/stage.py
+    - src/training/model_metadata.py
+    - src/data/clean_with_spark.py
+    - data/raw/numinamath.jsonl
+    outs:
+    - data/cleaned/records
+    - reports/eda/quality.json
+  split:
+    cmd: .venv/bin/python -m src.pipeline.stage split -- python -m src.data.split_dataset
+      "data/cleaned/records/part-*.json"
+    deps:
+    - src/pipeline/stage.py
+    - src/training/model_metadata.py
+    - src/data/split_dataset.py
+    - src/data/common.py
+    - data/cleaned/records
+    outs:
+    - data/splits
+    - reports/eda/splits.json
+  benchmark:
+    cmd: .venv/bin/python -m src.pipeline.stage benchmark -- python -m src.training.train_lora_cpu
+      --model Qwen/Qwen2.5-0.5B-Instruct --revision 7ae557604adf67be50417f59c2c2f167def9a775
+      --output reports/runtime/benchmark-adapter --benchmark-steps 3 --benchmark-report
+      reports/pipeline/benchmark.json --max-rss-gib 6
+    deps:
+    - src/pipeline/stage.py
+    - src/training/model_metadata.py
+    - src/training/train_lora_cpu.py
+    - src/training/prompting.py
+    - data/splits/train.jsonl
+    outs:
+    - reports/pipeline/benchmark.json
+  train:
+    cmd: .venv/bin/python -m src.pipeline.stage train -- python -m src.training.train_lora_cpu
+      --model Qwen/Qwen2.5-0.5B-Instruct --revision 7ae557604adf67be50417f59c2c2f167def9a775
+      --train-data data/splits/train.jsonl --output models/adapters/qwen-v2 --max-length
+      256 --threads 4 --epochs 1 --learning-rate 5e-5 --train
+    deps:
+    - src/pipeline/stage.py
+    - src/training/model_metadata.py
+    - src/training/train_lora_cpu.py
+    - src/training/prompting.py
+    - configs/train_qwen_v2.yaml
+    - data/splits/train.jsonl
+    - reports/pipeline/benchmark.json
+    outs:
+    - models/adapters/qwen-v2
+  evaluate_base:
+    cmd: .venv/bin/python -m src.pipeline.stage evaluate_base -- python -m src.training.evaluate_models
+      --model Qwen/Qwen2.5-0.5B-Instruct --revision 7ae557604adf67be50417f59c2c2f167def9a775
+      --output reports/evaluation/qwen_base.json
+    deps:
+    - src/pipeline/stage.py
+    - src/training/model_metadata.py
+    - src/training/evaluate_models.py
+    - src/training/prompting.py
+    - data/splits/test.jsonl
+    outs:
+    - reports/evaluation/qwen_base.json
+  evaluate_adapter:
+    cmd: .venv/bin/python -m src.pipeline.stage evaluate_adapter -- python -m src.training.evaluate_models
+      --model Qwen/Qwen2.5-0.5B-Instruct --revision 7ae557604adf67be50417f59c2c2f167def9a775
+      --adapter models/adapters/qwen-v2 --output reports/evaluation/qwen_lora_v2.json
+    deps:
+    - src/pipeline/stage.py
+    - src/training/model_metadata.py
+    - src/training/evaluate_models.py
+    - src/training/prompting.py
+    - data/splits/test.jsonl
+    - models/adapters/qwen-v2
+    outs:
+    - reports/evaluation/qwen_lora_v2.json
+  acceptance:
+    cmd: .venv/bin/python -m src.pipeline.stage acceptance -- python -m src.training.evaluate_generation_benchmark
+      --model Qwen/Qwen2.5-0.5B-Instruct --revision 7ae557604adf67be50417f59c2c2f167def9a775
+      --adapter models/adapters/qwen-v2 --max-new-tokens 48 --output reports/evaluation/qwen_v2_generation.json
+    deps:
+    - src/pipeline/stage.py
+    - src/training/model_metadata.py
+    - src/training/evaluate_generation_benchmark.py
+    - configs/generation_benchmark.json
+    - models/adapters/qwen-v2
+    - src/training/generation_contract.py
+    outs:
+    - reports/evaluation/qwen_v2_generation.json
+  register:
+    cmd: .venv/bin/python -m src.pipeline.stage register -- python -m src.training.register_model
+      --model Qwen/Qwen2.5-0.5B-Instruct --revision 7ae557604adf67be50417f59c2c2f167def9a775
+      --adapter models/adapters/qwen-v2 --evaluation reports/evaluation/qwen_lora_v2.json
+      --acceptance reports/evaluation/qwen_v2_generation.json --name local-math-assistant-qwen-cpu-v2
+      --output reports/pipeline/registration.json
+    deps:
+    - src/pipeline/stage.py
+    - src/training/model_metadata.py
+    - src/training/register_model.py
+    - src/training/verify_submission.py
+    - models/adapters/qwen-v2
+    - reports/evaluation/qwen_lora_v2.json
+    - reports/evaluation/qwen_v2_generation.json
+    - src/training/generation_contract.py
+    outs:
+    - reports/pipeline/registration.json

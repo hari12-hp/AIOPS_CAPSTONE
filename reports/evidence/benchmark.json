@@ -1,0 +1,22 @@
+{
+  "preflight": "passed",
+  "trainable_parameters": 1081344,
+  "records": 634,
+  "rejected_fully_truncated": 8,
+  "targets": [
+    "q_proj",
+    "k_proj",
+    "v_proj",
+    "o_proj"
+  ],
+  "benchmark_steps": 3,
+  "seconds": 6.326062049999564,
+  "seconds_per_step": 2.1086873499998546,
+  "losses": [
+    1.5229690074920654,
+    1.232158899307251,
+    1.1999448537826538
+  ],
+  "process_rss_bytes": 3772571648,
+  "process_rss_gib": 3.5134811401367188
+}

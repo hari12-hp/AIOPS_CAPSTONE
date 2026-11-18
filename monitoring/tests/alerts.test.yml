@@ -1,0 +1,160 @@
+rule_files:
+- /etc/prometheus/alerts.yml
+evaluation_interval: 15s
+tests:
+- name: Outage holds before firing
+  interval: 15s
+  input_series:
+  - series: up{job="math-assistant",instance="backend:8000",component="api"}
+    values: 0+0x40
+  alert_rule_test:
+  - eval_time: 45s
+    alertname: MathTargetUnavailable
+    exp_alerts: []
+  - eval_time: 75s
+    alertname: MathTargetUnavailable
+    exp_alerts:
+    - exp_labels:
+        job: math-assistant
+        instance: backend:8000
+        component: api
+        severity: critical
+        team: ml-platform
+      exp_annotations:
+        summary: math-assistant metrics target is unavailable
+        description: Prometheus cannot scrape backend:8000 for one minute. Check the
+          container, network and exporter before restarting it.
+        runbook_url: http://localhost:19199/runbook#availability
+- name: Recovery resolves target alert
+  interval: 15s
+  input_series:
+  - series: up{job="math-assistant",instance="backend:8000",component="api"}
+    values: 0+0x5 1+0x20
+  alert_rule_test:
+  - eval_time: 3m
+    alertname: MathTargetUnavailable
+    exp_alerts: []
+- name: Error ratio minimum volume gate 2
+  interval: 15s
+  input_series:
+  - series: math:solve_server_error_ratio:rate5m
+    values: 0.3+0x40
+  - series: math:solve_requests:increase10m
+    values: 2+0x40
+  alert_rule_test:
+  - eval_time: 3m
+    alertname: MathSolveErrorsCritical
+    exp_alerts: []
+- name: Error ratio minimum volume gate 20
+  interval: 15s
+  input_series:
+  - series: math:solve_server_error_ratio:rate5m
+    values: 0.3+0x40
+  - series: math:solve_requests:increase10m
+    values: 20+0x40
+  alert_rule_test:
+  - eval_time: 3m
+    alertname: MathSolveErrorsCritical
+    exp_alerts:
+    - exp_labels:
+        severity: critical
+        component: api
+        team: ml-platform
+      exp_annotations:
+        summary: More than 20% of solve requests return server errors
+        description: At least ten requests in ten minutes; server error ratio remains
+          above 20% for two minutes. Check model health and capacity.
+        runbook_url: http://localhost:19199/runbook#errors-and-latency
+- name: CPU latency threshold 10s
+  interval: 15s
+  input_series:
+  - series: math:solve_latency_seconds:p95_5m
+    values: 10+0x40
+  - series: math:solve_requests:increase10m
+    values: 20+0x40
+  alert_rule_test:
+  - eval_time: 6m
+    alertname: MathSolveLatencyHigh
+    exp_alerts: []
+- name: CPU latency threshold 45s
+  interval: 15s
+  input_series:
+  - series: math:solve_latency_seconds:p95_5m
+    values: 45+0x40
+  - series: math:solve_requests:increase10m
+    values: 20+0x40
+  alert_rule_test:
+  - eval_time: 6m
+    alertname: MathSolveLatencyHigh
+    exp_alerts:
+    - exp_labels:
+        severity: warning
+        component: api
+        team: ml-platform
+      exp_annotations:
+        summary: Solve p95 latency exceeds 30 seconds
+        description: CPU deployment threshold, sustained five minutes with at least
+          ten requests in ten minutes. Check concurrent requests, answer length and
+          memory.
+        runbook_url: http://localhost:19199/runbook#errors-and-latency
+- name: Pipeline failure identifies stage
+  interval: 15s
+  input_series:
+  - series: math_pipeline_stage_success{stage="train"}
+    values: 0+0x20
+  alert_rule_test:
+  - eval_time: 1m
+    alertname: MathPipelineFailed
+    exp_alerts:
+    - exp_labels:
+        stage: train
+        severity: warning
+        component: pipeline
+        team: ml-platform
+      exp_annotations:
+        summary: Pipeline stage train failed
+        description: Check the pipeline console and reports/runtime/pipeline.log.
+          Preserve the failed MLflow run before retrying.
+        runbook_url: http://localhost:19199/runbook#pipeline-and-model-quality
+- name: Generation score must clear declared gate
+  interval: 15s
+  input_series:
+  - series: math_generation_accuracy
+    values: 0.6+0x20
+  alert_rule_test:
+  - eval_time: 2m
+    alertname: MathGenerationGateFailed
+    exp_alerts:
+    - exp_labels:
+        severity: critical
+        component: model-quality
+        team: ml-platform
+      exp_annotations:
+        summary: The five-case generation acceptance gate failed
+        description: Do not promote the candidate. Inspect raw answers and the declared
+          acceptance patterns; this smoke score is not broad mathematical accuracy.
+        runbook_url: http://localhost:19199/runbook#pipeline-and-model-quality
+- name: Synthetic drill has a hold and resolves
+  interval: 15s
+  input_series:
+  - series: math_alert_delivery_drill
+    values: 1+0x3 0+0x20
+  alert_rule_test:
+  - eval_time: 0s
+    alertname: AlertDeliveryDrill
+    exp_alerts: []
+  - eval_time: 30s
+    alertname: AlertDeliveryDrill
+    exp_alerts:
+    - exp_labels:
+        severity: info
+        component: alerting
+        team: ml-platform
+      exp_annotations:
+        summary: Controlled local alert delivery drill
+        description: A temporary synthetic signal tests evaluation, routing and recovery
+          without stopping an application service.
+        runbook_url: http://localhost:19199/runbook#delivery-drill
+  - eval_time: 2m
+    alertname: AlertDeliveryDrill
+    exp_alerts: []

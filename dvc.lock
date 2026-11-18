@@ -1,34 +1,84 @@
 schema: '2.0'
 stages:
-  inspect_and_ingest:
-    cmd: .venv/bin/python -m src.data.inspect_dataset
+  eda:
+    cmd: .venv/bin/python -m src.pipeline.stage eda -- python -m src.data.eda
+      data/raw/numinamath.jsonl
     deps:
-    - path: artifacts/input/pilot-v1
+    - path: data/raw/numinamath.jsonl
       hash: md5
-      md5: 47813302314c754f348fdbfd954c5cc7.dir
-      size: 5992190
-      nfiles: 2
+      md5: 51feb5f71f8805c8a36b8cf87fe46365
+      size: 1589995
+    - path: src/data/common.py
+      hash: md5
+      md5: b820225defe45cb46a1fc3d1609c7c87
+      size: 1180
+    - path: src/data/eda.py
+      hash: md5
+      md5: 02a00c7f49d41da24ef7af80bbb7b09c
+      size: 2825
+    - path: src/pipeline/stage.py
+      hash: md5
+      md5: 0560568e7263b133903c55d4f432f262
+      size: 3735
+    - path: src/training/model_metadata.py
+      hash: md5
+      md5: 69b94953ddf56dae8418540a6291b8b2
+      size: 1085
+    outs:
+    - path: reports/eda/report.json
+      hash: md5
+      md5: 6e3a8947b4223c70a802453a5ddda524
+      size: 8958
+    - path: reports/eda/sample_review.json
+      hash: md5
+      md5: e59b71433cc0d628482b66501f54476c
+      size: 49045
+  inspect:
+    cmd: .venv/bin/python -m src.pipeline.stage inspect -- python -m
+      src.data.inspect_dataset
+    deps:
     - path: src/data/inspect_dataset.py
       hash: md5
-      md5: db6e3fd16d9db885e71b651b3e9bc410
-      size: 1408
+      md5: b67c91caeddaa7ec3b3d3b101d8b0f35
+      size: 1569
+    - path: src/pipeline/stage.py
+      hash: md5
+      md5: 0560568e7263b133903c55d4f432f262
+      size: 3735
+    - path: src/training/model_metadata.py
+      hash: md5
+      md5: 69b94953ddf56dae8418540a6291b8b2
+      size: 1085
     outs:
     - path: reports/runtime/environment.json
       hash: md5
-      md5: 2e66c473b7fef5a33beb9a88ec6389dd
+      md5: 7333385980c4ead46e45f48f430f1f15
       size: 707
-  ingest_dataset:
-    cmd: .venv/bin/python -m src.data.ingest_dataset --revision 
+  ingest:
+    cmd: .venv/bin/python -m src.pipeline.stage ingest -- python -m
+      src.data.ingest_dataset --revision
       1b05109f9e5c1ad06c0663519502416c30b300f8 --scan-limit 4000 --target 800
     deps:
     - path: configs/data.yaml
       hash: md5
       md5: 7210720dcdbf90f3f537901b26f7f799
       size: 190
+    - path: src/data/common.py
+      hash: md5
+      md5: b820225defe45cb46a1fc3d1609c7c87
+      size: 1180
     - path: src/data/ingest_dataset.py
       hash: md5
-      md5: c024aabfea9e37c11461e16d7fce6ee3
-      size: 2179
+      md5: 43bef49078551b2a7315136239d08358
+      size: 2525
+    - path: src/pipeline/stage.py
+      hash: md5
+      md5: 0560568e7263b133903c55d4f432f262
+      size: 3735
+    - path: src/training/model_metadata.py
+      hash: md5
+      md5: 69b94953ddf56dae8418540a6291b8b2
+      size: 1085
     outs:
     - path: data/raw/numinamath.jsonl
       hash: md5
@@ -36,30 +86,11 @@ stages:
       size: 1589995
     - path: reports/eda/ingestion.json
       hash: md5
-      md5: 04abdf299290bca11911e48c2acbbda9
+      md5: 5bbab2c1a6d00c4c76187d7493cf2176
       size: 451
-  eda:
-    cmd: .venv/bin/python -m src.data.eda data/raw/numinamath.jsonl
-    deps:
-    - path: data/raw/numinamath.jsonl
-      hash: md5
-      md5: 51feb5f71f8805c8a36b8cf87fe46365
-      size: 1589995
-    - path: src/data/eda.py
-      hash: md5
-      md5: fd34a326a8fe814133476c72aff6555f
-      size: 2209
-    outs:
-    - path: reports/eda/report.json
-      hash: md5
-      md5: db5efb721b46af5f18bcfd31fb03f847
-      size: 8958
-    - path: reports/eda/sample_review.json
-      hash: md5
-      md5: e59b71433cc0d628482b66501f54476c
-      size: 49045
-  clean_with_pyspark:
-    cmd: .venv/bin/python -m src.data.clean_with_spark data/raw/numinamath.jsonl
+  clean:
+    cmd: .venv/bin/python -m src.pipeline.stage clean -- python -m
+      src.data.clean_with_spark data/raw/numinamath.jsonl
     deps:
     - path: data/raw/numinamath.jsonl
       hash: md5
@@ -67,57 +98,282 @@ stages:
       size: 1589995
     - path: src/data/clean_with_spark.py
       hash: md5
-      md5: 4fe9ad1846df2ce147214627cb28341b
-      size: 1963
+      md5: 6efec40aa26dd45c1bd5825b41fe2a1d
+      size: 2427
+    - path: src/pipeline/stage.py
+      hash: md5
+      md5: 0560568e7263b133903c55d4f432f262
+      size: 3735
+    - path: src/training/model_metadata.py
+      hash: md5
+      md5: 69b94953ddf56dae8418540a6291b8b2
+      size: 1085
     outs:
     - path: data/cleaned/records
       hash: md5
-      md5: 2756337d67467efbf6c886b61b713681.dir
-      size: 1830191
+      md5: fb483bfd3fe18e021628995bc3cd720f.dir
+      size: 1823833
       nfiles: 4
     - path: reports/eda/quality.json
       hash: md5
-      md5: 4ae37e3268f04f345350c37f5c376497
+      md5: 3d74e51e73cf13903b3ddb8a58fede66
       size: 199
-  split_and_validate:
-    cmd: .venv/bin/python -m src.data.split_dataset 
-      data/cleaned/records/part-*.json
+  split:
+    cmd: .venv/bin/python -m src.pipeline.stage split -- python -m
+      src.data.split_dataset "data/cleaned/records/part-*.json"
     deps:
     - path: data/cleaned/records
       hash: md5
-      md5: 2756337d67467efbf6c886b61b713681.dir
-      size: 1830191
+      md5: fb483bfd3fe18e021628995bc3cd720f.dir
+      size: 1823833
       nfiles: 4
+    - path: src/data/common.py
+      hash: md5
+      md5: b820225defe45cb46a1fc3d1609c7c87
+      size: 1180
     - path: src/data/split_dataset.py
       hash: md5
-      md5: 3fbb1e0ae131642ed8baf4a6c107bbb0
-      size: 1300
+      md5: 2f67309268378e3aa56a93ae76da350d
+      size: 1556
+    - path: src/pipeline/stage.py
+      hash: md5
+      md5: 0560568e7263b133903c55d4f432f262
+      size: 3735
+    - path: src/training/model_metadata.py
+      hash: md5
+      md5: 69b94953ddf56dae8418540a6291b8b2
+      size: 1085
     outs:
     - path: data/splits
       hash: md5
-      md5: 0dbb1319c7d0082b9edb44a9d580f45b.dir
-      size: 1830598
+      md5: 171bd73481f7d6769c725e2defb9d42c.dir
+      size: 1824292
       nfiles: 3
     - path: reports/eda/splits.json
       hash: md5
-      md5: cc53672602a29739c8e520eee796a631
+      md5: 4f76be70c6c3551bb4a1d1980aea7f12
       size: 356
-  cpu_benchmark:
-    cmd: .venv/bin/python -m src.training.train_lora_cpu --model 
-      google/gemma-3-1b-it --revision dcc83ea841ab6100d6b47a070329e1ba4cf78752 
-      --output models/adapters/gemma-v2 --benchmark-steps 3 --benchmark-report 
-      reports/runtime/gemma_benchmark.json --max-rss-gib 8
+  benchmark:
+    cmd: .venv/bin/python -m src.pipeline.stage benchmark -- python -m
+      src.training.train_lora_cpu --model Qwen/Qwen2.5-0.5B-Instruct --revision
+      7ae557604adf67be50417f59c2c2f167def9a775 --output
+      reports/runtime/benchmark-adapter --benchmark-steps 3 --benchmark-report
+      reports/pipeline/benchmark.json --max-rss-gib 6
     deps:
     - path: data/splits/train.jsonl
       hash: md5
-      md5: e81a566c6c66eacf8d91d58ff4ec28e2
-      size: 1477119
+      md5: 82d3fb36dc99071edf02deb9445a1438
+      size: 1471979
+    - path: src/pipeline/stage.py
+      hash: md5
+      md5: 0560568e7263b133903c55d4f432f262
+      size: 3735
+    - path: src/training/model_metadata.py
+      hash: md5
+      md5: 69b94953ddf56dae8418540a6291b8b2
+      size: 1085
+    - path: src/training/prompting.py
+      hash: md5
+      md5: 26b8ed219917669dcf41655c41e93bf6
+      size: 720
     - path: src/training/train_lora_cpu.py
       hash: md5
-      md5: 64927e000fbf5687418f69e5297de04b
-      size: 5467
+      md5: 679fb471d3f589900aa9125d788d1fad
+      size: 7610
     outs:
-    - path: reports/runtime/gemma_benchmark.json
+    - path: reports/pipeline/benchmark.json
       hash: md5
-      md5: 7b0f4c91eb7c68fc863fa51e7a8d3ddf
-      size: 450
+      md5: 4114d5cea163e84d8305a69a8e4ea887
+      size: 452
+  train:
+    cmd: .venv/bin/python -m src.pipeline.stage train -- python -m
+      src.training.train_lora_cpu --model Qwen/Qwen2.5-0.5B-Instruct --revision
+      7ae557604adf67be50417f59c2c2f167def9a775 --train-data
+      data/splits/train.jsonl --output models/adapters/qwen-v2 --max-length 256
+      --threads 4 --epochs 1 --learning-rate 5e-5 --train
+    deps:
+    - path: configs/train_qwen_v2.yaml
+      hash: md5
+      md5: ea750ffec6911d2646b77a0cb35a3dbd
+      size: 305
+    - path: data/splits/train.jsonl
+      hash: md5
+      md5: 82d3fb36dc99071edf02deb9445a1438
+      size: 1471979
+    - path: reports/pipeline/benchmark.json
+      hash: md5
+      md5: 4114d5cea163e84d8305a69a8e4ea887
+      size: 452
+    - path: src/pipeline/stage.py
+      hash: md5
+      md5: 0560568e7263b133903c55d4f432f262
+      size: 3735
+    - path: src/training/model_metadata.py
+      hash: md5
+      md5: 69b94953ddf56dae8418540a6291b8b2
+      size: 1085
+    - path: src/training/prompting.py
+      hash: md5
+      md5: 26b8ed219917669dcf41655c41e93bf6
+      size: 720
+    - path: src/training/train_lora_cpu.py
+      hash: md5
+      md5: 679fb471d3f589900aa9125d788d1fad
+      size: 7610
+    outs:
+    - path: models/adapters/qwen-v2
+      hash: md5
+      md5: a9cee9477b1137ad0460f57415d462ff.dir
+      size: 72994964
+      nfiles: 43
+  evaluate_base:
+    cmd: .venv/bin/python -m src.pipeline.stage evaluate_base -- python -m
+      src.training.evaluate_models --model Qwen/Qwen2.5-0.5B-Instruct --revision
+      7ae557604adf67be50417f59c2c2f167def9a775 --output
+      reports/evaluation/qwen_base.json
+    deps:
+    - path: data/splits/test.jsonl
+      hash: md5
+      md5: b0b48d487b0e101cce5a60ab5b62c37a
+      size: 166084
+    - path: src/pipeline/stage.py
+      hash: md5
+      md5: 0560568e7263b133903c55d4f432f262
+      size: 3735
+    - path: src/training/evaluate_models.py
+      hash: md5
+      md5: d1c8ded3c4f8818ab3525a7a8b42b11a
+      size: 2773
+    - path: src/training/model_metadata.py
+      hash: md5
+      md5: 69b94953ddf56dae8418540a6291b8b2
+      size: 1085
+    - path: src/training/prompting.py
+      hash: md5
+      md5: 26b8ed219917669dcf41655c41e93bf6
+      size: 720
+    outs:
+    - path: reports/evaluation/qwen_base.json
+      hash: md5
+      md5: 368d1093c67ba2fc282dc730180c81da
+      size: 365
+  evaluate_adapter:
+    cmd: .venv/bin/python -m src.pipeline.stage evaluate_adapter -- python -m
+      src.training.evaluate_models --model Qwen/Qwen2.5-0.5B-Instruct --revision
+      7ae557604adf67be50417f59c2c2f167def9a775 --adapter models/adapters/qwen-v2
+      --output reports/evaluation/qwen_lora_v2.json
+    deps:
+    - path: data/splits/test.jsonl
+      hash: md5
+      md5: b0b48d487b0e101cce5a60ab5b62c37a
+      size: 166084
+    - path: models/adapters/qwen-v2
+      hash: md5
+      md5: a9cee9477b1137ad0460f57415d462ff.dir
+      size: 72994964
+      nfiles: 43
+    - path: src/pipeline/stage.py
+      hash: md5
+      md5: 0560568e7263b133903c55d4f432f262
+      size: 3735
+    - path: src/training/evaluate_models.py
+      hash: md5
+      md5: d1c8ded3c4f8818ab3525a7a8b42b11a
+      size: 2773
+    - path: src/training/model_metadata.py
+      hash: md5
+      md5: 69b94953ddf56dae8418540a6291b8b2
+      size: 1085
+    - path: src/training/prompting.py
+      hash: md5
+      md5: 26b8ed219917669dcf41655c41e93bf6
+      size: 720
+    outs:
+    - path: reports/evaluation/qwen_lora_v2.json
+      hash: md5
+      md5: 7477b9f3171a4050d3de5a98b719aedb
+      size: 389
+  acceptance:
+    cmd: .venv/bin/python -m src.pipeline.stage acceptance -- python -m
+      src.training.evaluate_generation_benchmark --model
+      Qwen/Qwen2.5-0.5B-Instruct --revision
+      7ae557604adf67be50417f59c2c2f167def9a775 --adapter models/adapters/qwen-v2
+      --max-new-tokens 48 --output reports/evaluation/qwen_v2_generation.json
+    deps:
+    - path: configs/generation_benchmark.json
+      hash: md5
+      md5: 47f4396bafc1475b8868c94b5badcb27
+      size: 722
+    - path: models/adapters/qwen-v2
+      hash: md5
+      md5: a9cee9477b1137ad0460f57415d462ff.dir
+      size: 72994964
+      nfiles: 43
+    - path: src/pipeline/stage.py
+      hash: md5
+      md5: 0560568e7263b133903c55d4f432f262
+      size: 3735
+    - path: src/training/evaluate_generation_benchmark.py
+      hash: md5
+      md5: 575370793325bfefa70f014154bd537d
+      size: 3610
+    - path: src/training/generation_contract.py
+      hash: md5
+      md5: c32cd7ef0446cf0f6c1b2fba87130581
+      size: 494
+    - path: src/training/model_metadata.py
+      hash: md5
+      md5: 69b94953ddf56dae8418540a6291b8b2
+      size: 1085
+    outs:
+    - path: reports/evaluation/qwen_v2_generation.json
+      hash: md5
+      md5: 5643a709aabac592f973581fe54f38e9
+      size: 1725
+  register:
+    cmd: .venv/bin/python -m src.pipeline.stage register -- python -m
+      src.training.register_model --model Qwen/Qwen2.5-0.5B-Instruct --revision
+      7ae557604adf67be50417f59c2c2f167def9a775 --adapter models/adapters/qwen-v2
+      --evaluation reports/evaluation/qwen_lora_v2.json --acceptance
+      reports/evaluation/qwen_v2_generation.json --name
+      local-math-assistant-qwen-cpu-v2 --output
+      reports/pipeline/registration.json
+    deps:
+    - path: models/adapters/qwen-v2
+      hash: md5
+      md5: a9cee9477b1137ad0460f57415d462ff.dir
+      size: 72994964
+      nfiles: 43
+    - path: reports/evaluation/qwen_lora_v2.json
+      hash: md5
+      md5: 7477b9f3171a4050d3de5a98b719aedb
+      size: 389
+    - path: reports/evaluation/qwen_v2_generation.json
+      hash: md5
+      md5: 5643a709aabac592f973581fe54f38e9
+      size: 1725
+    - path: src/pipeline/stage.py
+      hash: md5
+      md5: 0560568e7263b133903c55d4f432f262
+      size: 3735
+    - path: src/training/generation_contract.py
+      hash: md5
+      md5: c32cd7ef0446cf0f6c1b2fba87130581
+      size: 494
+    - path: src/training/model_metadata.py
+      hash: md5
+      md5: 69b94953ddf56dae8418540a6291b8b2
+      size: 1085
+    - path: src/training/register_model.py
+      hash: md5
+      md5: 3549592194918d0acebd8005bce9e83e
+      size: 7048
+    - path: src/training/verify_submission.py
+      hash: md5
+      md5: 08be2b278bff6ce66d62457223e401e8
+      size: 2437
+    outs:
+    - path: reports/pipeline/registration.json
+      hash: md5
+      md5: abd6ef60042884ea913bd10465468643
+      size: 383
