@@ -100,6 +100,7 @@ Historical Gemma experiments remain in the evaluation evidence. The fresh rebuil
 - [User manual](docs/user_manual.md), [operator runbook](docs/operator_runbook.md).
 - [Rubric evidence map](docs/rubric_evidence.md)
 - [A4 project report](docs/project_report.pdf), [third-party resources](THIRD_PARTY_NOTICES.md).
+- Google drive link for project explanation - https://drive.google.com/file/d/1Zx43QiPMHeOJQzbwuzzoHHgj2mC8E1_M/view?usp=sharing
 
 
 
