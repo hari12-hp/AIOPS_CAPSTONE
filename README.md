@@ -4,7 +4,7 @@ A CPU mathematics practice application with a separate web workspace and pipelin
 
 ![Math Studio workspace](docs/screenshots/workspace.jpg)
 
-## One-command setup and TA evaluation
+## here are some commands for navigating through project
 
 ```bash
 # Fresh checkout: download pinned Hugging Face resources, build, train and verify
@@ -90,7 +90,7 @@ The [operations runbook](monitoring/RUNBOOK.md) explains thresholds, triage, mai
 
 The selected public Qwen 2.5 0.5B model is pinned to a base revision and trained with rank-8 LoRA on a bounded NuminaMath snapshot. A CPU benchmark gates training memory. Held-out completion loss and a predeclared five-question generation smoke suite are reported separately. Passing this small smoke suite does not imply perfect mathematics accuracy. Check generated reasoning before relying on it.
 
-Historical Gemma experiments remain in the evaluation evidence. The fresh rebuild and deployed champion use Qwen. The mandatory design documents and measured results are below.
+Historical Gemma experiments remain in the evaluation evidence. The fresh rebuild and deployed champion use Qwen.please find mandatory design documents here, though i did metnion this my report too briefly :
 
 ## Submission documents
 
@@ -98,11 +98,10 @@ Historical Gemma experiments remain in the evaluation evidence. The fresh rebuil
 - [Data card](docs/data_card.md), [model card](docs/model_card.md).
 - [Test plan and cases](docs/test_plan.md), [measured test report](docs/test_report.md), [model evaluation report](docs/evaluation_report.md).
 - [User manual](docs/user_manual.md), [operator runbook](docs/operator_runbook.md).
-- [Rubric evidence map](docs/rubric_evidence.md), [recording guide](docs/recording_guide.md), [viva preparation](docs/viva_guide.md).
-- [A4 project report](docs/project_report.pdf), [separate documentation](docs/documenttion.pdf), [submission checklist](SUBMISSION_CHECKLIST.md), [third-party resources](THIRD_PARTY_NOTICES.md).
+- [Rubric evidence map](docs/rubric_evidence.md)
+- [A4 project report](docs/project_report.pdf), [third-party resources](THIRD_PARTY_NOTICES.md).
 
 After final verification, `.venv/bin/dvc push` populates the **local** artifact remote, then `.venv/bin/python scripts/package_submission.py` creates `output/submission/math-studio-submission.zip` with a manifest and SHA-256 checksum. This does not push anything to GitHub. Do not commit `.env`, model caches, SQLite databases, virtual environments or the ZIP; their ignore rules are supplied.
 
-The editable LaTeX files are `docs/project_report.tex` and `docs/documentation.tex`. `scripts/build_report.py` regenerates those two sources; the report covers design and results, while the documentation contains usage and operations. Neither document prints a preparation or execution date.
 
-To export the edited LaTeX sources, install the optional `requirements-report.txt`, then run `./scripts/export_reports.sh`. The pinned TeX Live image performs compilation inside Docker; no host TeX installation is needed. The outputs are `docs/project_report.pdf` and `docs/documenttion.pdf`.
+
